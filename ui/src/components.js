@@ -50,10 +50,12 @@ class GamePagePreview extends Element {
 
   }
 
+  previousAxes;
+
   render() {
     setTimeout(() => {
       this.requestUpdate();
-    }, 200);
+    }, 500);
     if (controller) {
       const axes = controller.axes.map(axe => Math.round(axe * 100));
 

@@ -22,4 +22,4 @@ elseif(UNIX)
 endif ()
 
 target_include_directories(quintal_control PRIVATE ${WEBSOCKETPP_INCLUDE_DIR})
-target_link_libraries(quintal_control PRIVATE ${Boost_LIBRARIES} ${LINK_THREAD} libcontrol firmatac)
+target_link_libraries(quintal_control PRIVATE ${LINK_THREAD} libcontrol firmatac)
