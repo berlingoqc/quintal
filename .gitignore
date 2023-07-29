@@ -1,0 +1,9 @@
+.vs/
+.vscode/
+build/
+*.swp
+CMakeSettings.json
+cmake-*
+.idea/
+CMakeSettings.json
+CMakeSettings.json
