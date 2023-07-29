@@ -9,3 +9,4 @@ CMakeSettings.json
 CMakeSettings.json
 
 **/node_modules
+**/dist
