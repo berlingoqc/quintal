@@ -11,7 +11,7 @@ add_executable (quintal_control main.cpp )
 
 if(APPLE)
 elseif(UNIX)
-	set(LINK_THREAD pthread)
+	set(LINK_THREAD pthread rt)
 
     include_directories (
         "${PROJECT_SOURCE_DIR}/firmatac/includes"
@@ -22,4 +22,4 @@ elseif(UNIX)
 endif ()
 
 target_include_directories(quintal_control PRIVATE ${WEBSOCKETPP_INCLUDE_DIR})
-target_link_libraries(quintal_control PRIVATE ${Boost_LIBRARIES} ${LINK_THREAD} ${LINK_FIRMATAC} libcontrol)
+target_link_libraries(quintal_control PRIVATE ${Boost_LIBRARIES} ${LINK_THREAD} libcontrol firmatac)

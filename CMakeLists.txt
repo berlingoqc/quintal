@@ -14,6 +14,8 @@ endif()
 
 find_package(Boost REQUIRED COMPONENTS system)
 
+SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})
+
 include_directories(
 	${Boost_INCLUDE_DIRS}
     libutils
