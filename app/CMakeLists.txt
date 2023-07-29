@@ -7,9 +7,19 @@ include_directories (
     "${PROJECT_SOURCE_DIR}/libcontrol/include"
 )
 
-add_executable (quintal_control main.cpp)
+add_executable (quintal_control main.cpp )
 
-#set( LINK_FS stdc++fs pthread)
+if(APPLE)
+elseif(UNIX)
+	set(LINK_THREAD pthread)
 
-# Ajoute le lien a ma librairie
-target_link_libraries (quintal_control libcontrol) 
+    include_directories (
+        "${PROJECT_SOURCE_DIR}/firmatac/includes"
+    )
+
+    set ( LINK_FIRMATAC firmatac)
+
+endif ()
+
+target_include_directories(quintal_control PRIVATE ${WEBSOCKETPP_INCLUDE_DIR})
+target_link_libraries(quintal_control PRIVATE ${Boost_LIBRARIES} ${LINK_THREAD} ${LINK_FIRMATAC} libcontrol)

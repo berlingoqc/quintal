@@ -1,5 +1,7 @@
 FROM ubuntu:20.04
 
+LABEL org.opencontainers.image.source https://github.com/berlingoqc/quintal
+
 COPY ./source.list /etc/apt/sources.list
 
 WORKDIR /usr/src/app
@@ -17,3 +19,4 @@ RUN apt install -yq libdbus-1-dev libdbus-1-dev:armhf libdbus-1-dev:arm64
 
 
 RUN apt install -yq gcc-arm* g++ g++-arm* g++-aarch*
+RUN apt install -yq libboost-dev libboost-dev:arm64 libasio-dev libboost-system-dev libboost-system-dev:arm64

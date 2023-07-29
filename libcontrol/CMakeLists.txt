@@ -12,4 +12,3 @@ set ( SRC src/quintal.cpp )
 add_library (libcontrol STATIC ${SRC})
 
 target_link_libraries (libcontrol stdc++)
-

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+  <script src="//unpkg.com/alpinejs" defer></script>
+  <script type="module" src="/src/components.js"></script>
+  <script type="module" src="/src/global.js"></script>
+
+  <link href="/dist/output.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="bg-green-300 border-green-600 border-b p-4 m-4 rounded">
+        Hello World
+    </div>
+
+    <div x-data="{ open: false }">
+      <button x-on:click="open = ! open">Toggle Dropdown</button>
+   
+    </div>
+
+    <simple-greeting name="William Quintal"></simple-greeting>
+
+</body>

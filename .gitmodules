@@ -1,0 +1,9 @@
+[submodule "websocketpp"]
+	path = websocketpp
+	url = git@github.com:zaphoyd/websocketpp.git
+[submodule "ustreamer"]
+	path = ustreamer
+	url = git@github.com:pikvm/ustreamer.git
+[submodule "firmatac"]
+	path = firmatac
+	url = git@github.com:berlingoqc/FirmataC.git 
