@@ -42,17 +42,20 @@ class GamePagePreview extends Element {
     window.addEventListener("gamepadconnected", () => this.requestUpdate());
     window.addEventListener("gamepaddisconnected", () => this.requestUpdate());
 
-    this.socket = new WebSocket("ws://"+"localhost"+":9002");
+    this.socket = new WebSocket("ws://"+this.context.host+":9002");
 
     this.socket.addEventListener("open", (event) => {
       this.socket.send("Hello Server!");
     });
+
   }
+
+  previousAxes;
 
   render() {
     setTimeout(() => {
       this.requestUpdate();
-    }, 100);
+    }, 50);
     if (controller) {
       const axes = controller.axes.map(axe => Math.round(axe * 100));
 
