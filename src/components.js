@@ -42,19 +42,18 @@ class GamePagePreview extends Element {
     window.addEventListener("gamepadconnected", () => this.requestUpdate());
     window.addEventListener("gamepaddisconnected", () => this.requestUpdate());
 
-    this.socket = new WebSocket("ws://"+this.context.host+":9002");
+    this.socket = new WebSocket("ws://" + this.context.host + ":9002");
 
     this.socket.addEventListener("open", (event) => {
       this.socket.send("Hello Server!");
     });
-
   }
 
   render() {
     setTimeout(() => {
       this.requestUpdate();
     }, 50);
-    if (controller) {
+    if (controller != null) {
       const axes = controller.axes.map(axe => Math.round(axe * 100));
 
       axes.push(controller.buttons[0].pressed ? 1 : 0, controller.buttons[1].pressed ? 1 : 0);
@@ -71,8 +70,20 @@ class GamePagePreview extends Element {
        B1 : ${axes[4]}
        B2 : ${axes[5]}
       `;
-    } else {
-      return html`Connect a controller`;
+    }
+    if (keystate.hasChange) {
+      const payload = [
+        keystate.right ? -100 : (keystate.left) ? 100 : 0,
+        0,
+        0,
+        0,
+        keystate.front ? 1 : 0,
+        keystate.back ? 1 : 0
+      ];
+
+      this.socket.send(payload.join(","));
+
+      console.log('sending keystroke');
     }
   }
 }
@@ -105,7 +116,7 @@ class VehiculeControlPage extends Element {
 class MainApp extends Element {
   static styles = css`p { color: blue }`;
   static properties = {
-    name: {type: String}
+    name: { type: String }
   };
 
   constructor() {
@@ -125,7 +136,7 @@ class MainApp extends Element {
       `;
     }
   }
-  
+
   createRenderRoot() {
     return this;
   }
