@@ -90,29 +90,32 @@ async def echo(websocket):
     async for message in websocket:
         print(message);
         elements = message.split(',');
-        if len(elements) == 6:
+        if len(elements) == 8:
             l_y = int(elements[1])
             l_x = int(elements[0])
 
             power = int(elements[4])
             reverse = int(elements[5])
 
+            pwm_motor_a = float(elements[6]);
+            pwm_motor_b = float(elements[7]);
+
             if reverse:
                 print("reverse")
-                motor.backward(1.0, 0.0)
+                motor.backward(pwm_motor_a, 0.0)
             elif power:
                 print("forward")
-                motor.forward(1.0, 0.0)
+                motor.forward(pwm_motor_a, 0.0)
             else:
                 print("stop")
                 motor.stop(MOTOR_A, 0.0)
             
             if l_x > 5:
                 print("right")
-                motor.turn_right(1.0, 0.0)
+                motor.turn_right(pwm_motor_b, 0.0)
             elif l_x < -5:
                 print("left")
-                motor.turn_left(1.0, 0.0)
+                motor.turn_left(pwm_motor_b, 0.0)
             else:
                 print("stop steering")
                 motor.stop(MOTOR_B, 0.0)

@@ -4,7 +4,11 @@
 function getContext() {
     const urlParams = new URLSearchParams(window.location.search);
 
-    const host = urlParams.get('host');
+    let host = urlParams.get('host');
+
+    if (!host || host == "") {
+        host = window.location.hostname;
+    }
 
     return {
         host: host
