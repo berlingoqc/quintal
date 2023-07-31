@@ -50,8 +50,6 @@ class GamePagePreview extends Element {
 
   }
 
-  previousAxes;
-
   render() {
     setTimeout(() => {
       this.requestUpdate();
@@ -59,7 +57,10 @@ class GamePagePreview extends Element {
     if (controller) {
       const axes = controller.axes.map(axe => Math.round(axe * 100));
 
+      axes.push(controller.buttons[0].pressed ? 1 : 0, controller.buttons[1].pressed ? 1 : 0);
+
       this.socket.send(axes.join(","));
+
 
       return html`
        Gamepage status :  ${controller.id}
@@ -67,6 +68,8 @@ class GamePagePreview extends Element {
        LX : ${axes[0]}
        RY : ${axes[3]}
        RX : ${axes[2]}
+       B1 : ${axes[4]}
+       B2 : ${axes[5]}
       `;
     } else {
       return html`Connect a controller`;
