@@ -35,6 +35,10 @@ class VideoPlayer extends Element {
 }
 
 class GamePagePreview extends Element {
+  static properties = {
+    power: { type: Number }
+  };
+  
 
   constructor() {
     super();
@@ -56,20 +60,9 @@ class GamePagePreview extends Element {
     if (controller != null) {
       const axes = controller.axes.map(axe => Math.round(axe * 100));
 
-      axes.push(controller.buttons[0].pressed ? 1 : 0, controller.buttons[1].pressed ? 1 : 0);
+      axes.push(controller.buttons[0].pressed ? 1 : 0, controller.buttons[1].pressed ? 1 : 0, 255, 255);
 
       this.socket.send(axes.join(","));
-
-
-      return html`
-       Gamepage status :  ${controller.id}
-       LY : ${axes[1]}
-       LX : ${axes[0]}
-       RY : ${axes[3]}
-       RX : ${axes[2]}
-       B1 : ${axes[4]}
-       B2 : ${axes[5]}
-      `;
     }
     if (keystate.hasChange) {
       const payload = [
@@ -78,13 +71,16 @@ class GamePagePreview extends Element {
         0,
         0,
         keystate.front ? 1 : 0,
-        keystate.back ? 1 : 0
+        keystate.back ? 1 : 0,
+        this.power / 100.0,
+        this.power / 100.0
       ];
 
       this.socket.send(payload.join(","));
 
-      console.log('sending keystroke');
+      console.log('sending keystroke ' + this.power);
     }
+
   }
 }
 
@@ -105,7 +101,13 @@ class VehiculeControlPage extends Element {
 
           <p> {{ok}} </p>
 
-          <gamepad-preview></gamepad-preview>
+          <div x-data="{ value: 50 }">
+            <div>
+              <input type="range" min="0" max="100" x-model="value" x-bind:value="value" x-on:input="value = $event.target.valueAsNumber">
+              <span x-text="value"></span>
+            </div>
+            <gamepad-preview x-bind:power="value"></gamepad-preview>
+          </div>
         </template>
       </div>
     `
