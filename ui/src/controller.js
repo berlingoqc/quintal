@@ -3,6 +3,9 @@
 let controller;
 
 window.addEventListener("gamepadconnected", (e) => {
+    if (e == null) {
+        return;
+    }
     console.log(
         "Gamepad connected at index %d: %s. %d buttons, %d axes.",
         e.gamepad.index,
