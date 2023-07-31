@@ -3,7 +3,7 @@
 #include <sstream>
 #include <vector>
 
-#include "firmata.h"
+//#include "firmata.h"
 
 #include <boost/beast.hpp>
 
@@ -22,7 +22,7 @@ namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
-t_firmata *firmata;
+//t_firmata *firmata;
 int i = 0;
 
 // for string delimiter
@@ -50,6 +50,9 @@ struct control_payload
 
     int r_y;
     int r_x;
+
+    bool a;
+    bool b;
 };
 
 enum Direction
@@ -97,11 +100,26 @@ std::ostream &operator<<(std::ostream &os, hbridge_value const &arg)
     return os;
 }
 
-dc_motor_value get_dc_motor_value(int v)
+dc_motor_value get_dc_motor_value_throttle(control_payload const * payload)
 {
 
     // 100 et -100,  -100
     auto value = dc_motor_value{};
+
+    if (payload->a == true) {
+        value.active = true;
+        value.direction = Direction::FORWARD;
+        value.power = 255;
+    } else if (payload-> b == true) {
+        value.active = true;
+        value.direction = Direction::REVERSE;
+        value.power = 255;
+    } else {
+        value.active = false;
+        value.power = 0;
+    }
+
+    /*
 
     int zero_diff = 0;
 
@@ -123,16 +141,49 @@ dc_motor_value get_dc_motor_value(int v)
     }
 
     value.power = (zero_diff * 255) / 100;
+    */
 
     return value;
 }
+
+dc_motor_value get_dc_motor_value_steering(control_payload const * payload)
+{
+
+    // 100 et -100,  -100
+    auto value = dc_motor_value{};
+
+    int zero_diff = 0;
+
+    if (payload->l_x < -5)
+    {
+        value.active = true;
+        value.direction = Direction::FORWARD;
+        zero_diff = 255; 
+    }
+    else if (payload->l_x > 5)
+    {
+        value.active = true;
+        value.direction = Direction::REVERSE;
+        zero_diff = 255;
+    }
+    else
+    {
+        value.active = false;
+    }
+
+    value.power = 255;
+
+    return value;
+}
+
+
 
 hbridge_value get_hbridge_value(control_payload const *control_payload)
 {
 
     return hbridge_value{
-        get_dc_motor_value(control_payload->l_y),
-        get_dc_motor_value(control_payload->l_x)};
+        get_dc_motor_value_throttle(control_payload),
+        get_dc_motor_value_steering(control_payload)};
 }
 
 
@@ -169,9 +220,6 @@ void do_session(tcp::socket socket)
             boost::asio::const_buffer data_buffer = buffer.data();
             std::string result(boost::asio::buffer_cast<const char *>(data_buffer), boost::asio::buffer_size(data_buffer));
 
-            //ws.text(ws.got_text());
-            //ws.write(buffer.data());
-
             const auto delimiter = ",";
             const auto payload = result;
 
@@ -189,7 +237,7 @@ void do_session(tcp::socket socket)
                            [](std::string str)
                            { return std::atoi(str.c_str()); });
 
-            const auto control_struct = control_payload{newV.at(1), newV.at(0), newV.at(3), newV.at(2)};
+            const auto control_struct = control_payload{newV.at(1), newV.at(0), newV.at(3), newV.at(2), newV.at(4) == 1 ? true : false , newV.at(5) == 1 ? true : false};
             const auto hbridge = get_hbridge_value(&control_struct);
 
 
@@ -245,6 +293,7 @@ int main()
                 &do_session,
                 std::move(socket))
                 .detach();
+                /*
 
              firmata = firmata_new("/dev/ttyACM0"); // init Firmata
 
@@ -294,7 +343,7 @@ int main()
         mtx.unlock();
 
         sleep(2);
-    }
+    }*/
         }
     }
     catch (const std::exception &e)

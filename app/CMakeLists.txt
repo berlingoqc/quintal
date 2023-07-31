@@ -5,21 +5,14 @@ cmake_minimum_required (VERSION 3.8)
 
 include_directories (
     "${PROJECT_SOURCE_DIR}/libcontrol/include"
+    "${PROJECT_SOURCE_DIR}/libfirmata/include"
 )
 
 add_executable (quintal_control main.cpp )
 
 if(APPLE)
 elseif(UNIX)
-	set(LINK_THREAD pthread rt)
-
-    include_directories (
-        "${PROJECT_SOURCE_DIR}/firmatac/includes"
-    )
-
-    set ( LINK_FIRMATAC firmatac)
-
+	set(LINK_THREAD pthread rt boost_thread)
 endif ()
 
-target_include_directories(quintal_control PRIVATE ${WEBSOCKETPP_INCLUDE_DIR})
-target_link_libraries(quintal_control PRIVATE ${LINK_THREAD} libcontrol firmatac)
+target_link_libraries(quintal_control PRIVATE ${LINK_THREAD} libcontrol libfirmata)

@@ -19,13 +19,12 @@ SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})
 include_directories(
 	${Boost_INCLUDE_DIRS}
     libutils
+	libfirmata
 )
 
+add_subdirectory("libfirmata")
 add_subdirectory("libcontrol")
 add_subdirectory("app")
 
-if(APPLE)
-elseif(UNIX)
-	add_subdirectory("firmatac")
-endif()
+add_subdirectory("example/firmata")
 
