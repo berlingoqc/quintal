@@ -13,26 +13,31 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 find_package(Boost REQUIRED COMPONENTS system)
-find_package(libdatachannel REQUIRED)
+find_package(LibDataChannel REQUIRED)
 find_package(OpenCV REQUIRED)
 
-#find_package(PkgConfig REQUIRED)
-#pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
+if (APPLE)
+    find_library(GSTREAMER_LIBRARIES
+        NAMES GStreamer
+        PATHS /Library/Frameworks/GStreamer.framework
+        REQUIRED
+    )
 
-find_library(GSTREAMER_LIBRARY
-    NAMES GStreamer
-    PATHS /Library/Frameworks/GStreamer.framework
-    REQUIRED
-)
+    # Find GStreamer headers
+    find_path(GSTREAMER_INCLUDE_DIRS
+        NAMES gst/gst.h
+        PATHS /Library/Frameworks/GStreamer.framework/Headers
+        REQUIRED
+    )
 
-# Find GStreamer headers
-find_path(GSTREAMER_INCLUDE_DIR
-    NAMES gst/gst.h
-    PATHS /Library/Frameworks/GStreamer.framework/Headers
-    REQUIRED
-)
+    link_directories(${GSTREAMER_LIBRARY}/Libraries)
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
+endif()
 
-link_directories(/Library/Frameworks/GStreamer.framework/Libraries)
+
+
 
 SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})
 
@@ -40,7 +45,7 @@ include_directories(
 	${Boost_INCLUDE_DIRS}
     libutils
 	libfirmata
-	${GSTREAMER_INCLUDE_DIR}
+	${GSTREAMER_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 )
 
@@ -48,5 +53,5 @@ add_subdirectory("libfirmata")
 add_subdirectory("libcontrol")
 add_subdirectory("app")
 
-add_subdirectory("example/firmata")
+add_subdirectory("example")
 

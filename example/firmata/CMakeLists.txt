@@ -12,4 +12,4 @@ elseif(UNIX)
 endif ()
 
 
-target_link_libraries(example_firmata PRIVATE ${LINK_THREAD} LibDataChannel::LibDataChannel libfirmata ${GSTREAMER_LIBRARY} ${OpenCV_LIBS})
+target_link_libraries(example_firmata PRIVATE ${LINK_THREAD} LibDataChannel::LibDataChannel libfirmata ${GSTREAMER_LIBRARIES} ${OpenCV_LIBS})
