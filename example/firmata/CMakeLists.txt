@@ -11,4 +11,5 @@ elseif(UNIX)
 	set(LINK_THREAD pthread rt boost_thread)
 endif ()
 
-target_link_libraries(example_firmata PRIVATE ${LINK_THREAD} libfirmata)
+
+target_link_libraries(example_firmata PRIVATE ${LINK_THREAD} LibDataChannel::LibDataChannel libfirmata ${GSTREAMER_LIBRARY} ${OpenCV_LIBS})

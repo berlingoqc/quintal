@@ -5,6 +5,11 @@
 #include "serialport.hpp"
 #include "firmata.hpp"
 
+#include <rtc/rtc.hpp>
+#include <gst/gst.h>
+#include <gst/app/gstappsink.h>
+#include <opencv2/opencv.hpp>
+
 
 struct sysex_message {
 	char id;
@@ -103,7 +108,21 @@ public:
 
 int main() {
 
+	/*
+	gst_init(nullptr, nullptr);
+	std::string pipeline_str = "avfvideosrc ! videoconvert ! videoscale ! video/x-raw,width=640,height=480 ! queue ! x264enc tune=zerolatency bitrate=1000 key-int-max=30 ! video/x-h264, profile=constrained-baseline ! rtph264pay pt=96 mtu=1200 ! udpsink host=127.0.0.1 port=6000";
+	GError* error = nullptr;
+	auto pipeline = gst_parse_launch(pipeline_str.c_str(), &error);
+	if (error) {
+		std::cout << "failed to start gst pipe " << error << std::endl;
+ 	   	g_error_free(error);
+  		return -1;
+	}	
+	*/
+
     asio::io_context ioc;
+
+	std::cout << "test" << std::endl;
 
 	const auto dev = "/dev/ttyACM0";
 	const auto braud_rate = 57600;
