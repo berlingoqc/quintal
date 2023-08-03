@@ -15,6 +15,7 @@ endif()
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(LibDataChannel REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 if (APPLE)
     find_library(GSTREAMER_LIBRARIES
