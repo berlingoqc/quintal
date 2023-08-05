@@ -11,6 +11,7 @@ include_directories (
 add_executable (quintal_control main.cpp camera_streamer.cpp)
 
 if(APPLE)
+	set(LINK_THREAD Boost::thread)
 elseif(UNIX)
 	set(LINK_THREAD pthread rt boost_thread)
 endif ()

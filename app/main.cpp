@@ -20,4 +20,7 @@ int main()
         cameraStreamer.init();
     });
 
+
+    gstreamer_thread.join();
+
 }

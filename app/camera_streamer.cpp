@@ -45,8 +45,16 @@ void CameraStreamer::init() {
   		return;
 	}
 
+    #ifdef __APPLE__
+        std::string source_camera = "avfvideosrc device-index=0";
+    #elif __linux__
+        std::string source_camera = "v4l2src device=/dev/video0";
+    #else
+        throw std::runtime_error("Unknown system for gstreamer video source");
+    #endif
 
-    std::string gstreamer_pipeline = "v4l2src device=/dev/video0 ! videoconvert ! video/x-raw,width=640,height=480,format=BGR ! tee name=t "
+
+    std::string gstreamer_pipeline = source_camera + " ! videoconvert ! video/x-raw,width=640,height=480,format=BGR ! tee name=t "
                                      "t. ! queue ! videoconvert ! x264enc tune=zerolatency bitrate=1000 key-int-max=30 ! video/x-h264, profile=constrained-baseline ! rtph264pay pt=96 mtu=1200 ! udpsink host=127.0.0.1 port=6000 "
                                      "t. ! queue ! appsink name=appsink emit-signals=true ";
 
@@ -67,6 +75,8 @@ void CameraStreamer::init() {
         gst_object_unref (pipeline);
 		return;
     }
+
+    std::cout << "starting streaming pipeline" << std::endl;
 
 	bus = gst_element_get_bus (pipeline);
     msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, static_cast<GstMessageType>(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
