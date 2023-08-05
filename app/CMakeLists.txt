@@ -8,7 +8,11 @@ include_directories (
     "${PROJECT_SOURCE_DIR}/libfirmata/include"
 )
 
-add_executable (quintal_control main.cpp camera_streamer.cpp)
+add_executable (quintal_control
+    main.cpp
+    camera_streamer.cpp
+    camera_analysis.cpp
+)
 
 if(APPLE)
 	set(LINK_THREAD Boost::thread)

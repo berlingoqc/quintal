@@ -1,10 +1,6 @@
 #include "camera_streamer.hpp"
 
-#include <opencv2/opencv.hpp>
-
-cv::CascadeClassifier face_cascade;
-
-static GstFlowReturn new_sample (GstElement *sink, gpointer *data) {
+static GstFlowReturn new_sample (GstElement *sink, CVFrameQueue* data) {
     GstSample *sample;
 
 
@@ -20,14 +16,13 @@ static GstFlowReturn new_sample (GstElement *sink, gpointer *data) {
   		int width = 640;
   		int height = 480;
 
+        std::unique_lock<std::mutex> lock(data->mtx);
+
   		cv::Mat frame(cv::Size(width, height), CV_8UC3, (char*)map.data, cv::Mat::AUTO_STEP);
 
-  		std::vector<cv::Rect> faces;
-  		face_cascade.detectMultiScale(frame, faces);
-
-  		for (size_t i = 0; i < faces.size(); i++) {
-			std::cout << faces[i] << std::endl;
-  		}
+        data->frameQueue.push(frame);
+        lock.unlock();
+        data->condVar.notify_one();
 
   		gst_buffer_unmap(buffer, &map);
         gst_sample_unref (sample);
@@ -39,11 +34,6 @@ static GstFlowReturn new_sample (GstElement *sink, gpointer *data) {
 
 void CameraStreamer::init() {
 	gst_init (nullptr, nullptr);
-
-	if (!face_cascade.load("/opt/haarcascade_frontalface_default.xml")) {
-  		std::cerr << "Error loading face cascade\n";
-  		return;
-	}
 
     #ifdef __APPLE__
         std::string source_camera = "avfvideosrc device-index=0";
@@ -67,7 +57,7 @@ void CameraStreamer::init() {
     }
 
     sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
-    g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), NULL);
+    g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), getQueue());
 
     ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) {
@@ -89,4 +79,8 @@ void CameraStreamer::init() {
     gst_object_unref (pipeline);
 
 	return;
+}
+
+CVFrameQueue* CameraStreamer::getQueue() {
+    return &queue;
 }

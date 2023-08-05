@@ -1,3 +1,4 @@
+#pragma once
 
 #include <memory>
 #include <optional>
@@ -15,7 +16,6 @@ public:
 
 	void initConnectionWithPeer(rtc::Description description);
 
-
 	void startVideoFetching();
 
 	void stopVideoFetching();
@@ -24,6 +24,4 @@ private:
 	std::shared_ptr<rtc::PeerConnection> pc;
 
 	std::optional<rtc::Description> peer;
-	
-	boost::thread threadVideo;
 };
