@@ -8,11 +8,18 @@ include_directories (
     "${PROJECT_SOURCE_DIR}/libfirmata/include"
 )
 
-add_executable (quintal_control main.cpp )
+add_executable (quintal_control main.cpp camera_streamer.cpp)
 
 if(APPLE)
 elseif(UNIX)
 	set(LINK_THREAD pthread rt boost_thread)
 endif ()
 
-target_link_libraries(quintal_control PRIVATE ${LINK_THREAD} libcontrol libfirmata)
+target_link_libraries(quintal_control PRIVATE
+    ${LINK_THREAD}
+    libcontrol
+    libfirmata
+    ${GSTREAMER_LIBRARIES}
+    ${OpenCV_LIBS}
+    LibDataChannel::LibDataChannel
+)
