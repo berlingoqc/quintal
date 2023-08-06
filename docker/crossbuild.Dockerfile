@@ -20,3 +20,13 @@ RUN apt install -yq libdbus-1-dev libdbus-1-dev:armhf libdbus-1-dev:arm64
 
 RUN apt install -yq gcc-arm* g++ g++-arm* g++-aarch*
 RUN apt install -yq libboost-dev libboost-dev:arm64 libasio-dev libboost-system-dev libboost-system-dev:arm64
+
+RUN apt install -yq libgstreamer1.0-dev libgstreamer1.0-dev:arm64 libgstreamer1.0-dev:armhf
+#RUN apt-get install -yq libopencv* libopencv*:arm64 libopencv*:armhf
+RUN apt-get install -yq nlohmann-json3-dev
+
+RUN apt-get install -yq git && git clone https://github.com/paullouisageneau/libdatachannel.git && \
+	cd libdatachannel && git submodule update --init --recursive --depth 1 && \
+	mkdir build && cd build && cmake .. && make && make install
+
+RUN apt-get install -yq libopencv-dev

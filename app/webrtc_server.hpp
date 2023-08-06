@@ -5,7 +5,7 @@
 
 #include <boost/thread/thread.hpp>
 
-#include "rtc/rtc.hpp"
+#include <rtc/rtc.hpp>
 
 template <class T> std::weak_ptr<T> make_weak_ptr(std::shared_ptr<T> ptr) { return ptr; };
 

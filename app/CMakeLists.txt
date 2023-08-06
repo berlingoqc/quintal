@@ -6,12 +6,18 @@ cmake_minimum_required (VERSION 3.8)
 include_directories (
     "${PROJECT_SOURCE_DIR}/libcontrol/include"
     "${PROJECT_SOURCE_DIR}/libfirmata/include"
+    "/usr/local/include"
 )
 
 add_executable (quintal_control
     main.cpp
+
     camera_streamer.cpp
     camera_analysis.cpp
+
+    ws_client.cpp
+    
+ #   webrtc_server.cpp
 )
 
 if(APPLE)
@@ -26,5 +32,4 @@ target_link_libraries(quintal_control PRIVATE
     libfirmata
     ${GSTREAMER_LIBRARIES}
     ${OpenCV_LIBS}
-    LibDataChannel::LibDataChannel
 )

@@ -14,9 +14,6 @@ using nlohmann::json;
 
 const int BUFFER_SIZE = 2048;
 
-template <class T> std::weak_ptr<T> make_weak_ptr(std::shared_ptr<T> ptr) { return ptr; };
-
-
 void WebRTCServer::init() {
 
 	rtc::InitLogger(rtc::LogLevel::Debug);
@@ -34,13 +31,15 @@ void WebRTCServer::init() {
 	pc->onStateChange(
 	    [](rtc::PeerConnection::State state) { std::cout << "State: " << state << std::endl; });
 
-	pc->onGatheringStateChange([pc](rtc::PeerConnection::GatheringState state) {
+	pc->onGatheringStateChange([wpc = make_weak_ptr(pc)](rtc::PeerConnection::GatheringState state) {
 		std::cout << "Gathering State: " << state << std::endl;
 		if (state == rtc::PeerConnection::GatheringState::Complete) {
-			auto description = pc->localDescription();
-			json message = {{"type", description->typeString()},
+			if(auto pc = wpc.lock()) {
+				auto description = pc->localDescription();
+				json message = {{"type", description->typeString()},
 			                {"sdp", std::string(description.value())}};
-			std::cout << message << std::endl;
+				std::cout << message << std::endl;
+			}
 		}
 	});
 

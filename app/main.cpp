@@ -5,15 +5,19 @@
 
 #include "camera_streamer.hpp"
 #include "camera_analysis.hpp"
+#include "ws_client.hpp"
+
+//#include "webrtc_server.hpp"
 
 
 int main()
 {
     boost::thread_group threadGroup;
-    boost::asio::io_context io_context;
 
+    WebSocketClient wsClient;
     CameraStreamer cameraStreamer;
     CameraAnalysis cameraAnalysis;
+    //WebRTCServer webRtcServer;
     auto reference_queue = cameraStreamer.getQueue();
 
     threadGroup.create_thread([&]() {
@@ -24,6 +28,16 @@ int main()
         cameraAnalysis.init(reference_queue);
     });
 
+    wsClient.connect("localhost", "8000", "/mycustomid");
+
+    wsClient.send("{\"id\":\"supper_id\"}");
+
+    bool foundPeer = false;
+    while(!foundPeer) {
+        std::cout << wsClient.receive() << std::endl;
+    }
+
+    //webRtcServer.init();
 
     threadGroup.join_all();
 }

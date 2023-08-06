@@ -12,12 +12,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message("debug mode")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS system thread)
 find_package(LibDataChannel REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 if (APPLE)
+    find_package(Boost REQUIRED COMPONENTS system thread)
     find_library(GSTREAMER_LIBRARIES
         NAMES GStreamer
         PATHS /Library/Frameworks/GStreamer.framework
@@ -33,6 +33,7 @@ if (APPLE)
 
     link_directories(${GSTREAMER_LIBRARIES}/Libraries)
 else()
+    find_package(Boost REQUIRED COMPONENTS system)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 endif()

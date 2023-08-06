@@ -44,7 +44,6 @@ async def handle_websocket(websocket, path):
                 await destination_websocket.send(data)
             else:
                 print('Client {} not found'.format(destination_id))
-
     except Exception as e:
         print(e)
 
