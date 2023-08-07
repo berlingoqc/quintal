@@ -1,6 +1,8 @@
 
 #include "ws_client.hpp"
 
+#include <ostream>
+
 WebSocketClient::WebSocketClient() : resolver_(ioc), ws_(ioc)
 {
 }
@@ -28,6 +30,30 @@ std::string WebSocketClient::receive()
     ws_.read(buffer);
     return boost::beast::buffers_to_string(buffer.data());
 }
+
+void WebSocketClient::receiveAsync() {
+    boost::beast::flat_buffer buffer;
+    ws_.async_read(buffer,
+    [&buffer](boost::system::error_code ec, std::size_t bytes_transferred) {
+              if (ec)
+      {
+         // Handle the error (e.g., close the WebSocket or log the error)
+         std::cerr << "failed to error_code" << std::endl;
+      }
+      else
+      {
+         // Use the data in `buffer`
+         std::cout << "reading from buffer" << std::endl;
+
+      }
+    }
+    );
+}
+
+void WebSocketClient::run() {
+    ioc.run();
+}
+
 
 void WebSocketClient::close()
 {

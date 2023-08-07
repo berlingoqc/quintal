@@ -17,7 +17,7 @@ add_executable (quintal_control
 
     ws_client.cpp
     
- #   webrtc_server.cpp
+    webrtc_server.cpp
 )
 
 if(APPLE)
@@ -27,6 +27,7 @@ elseif(UNIX)
 endif ()
 
 target_link_libraries(quintal_control PRIVATE
+    LibDataChannel::LibDataChannel
     ${LINK_THREAD}
     libcontrol
     libfirmata

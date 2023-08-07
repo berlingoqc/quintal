@@ -4,6 +4,9 @@
 #include <optional>
 
 #include <boost/thread/thread.hpp>
+#include <boost/function.hpp>
+
+#include <nlohmann/json.hpp>
 
 #include <rtc/rtc.hpp>
 
@@ -12,7 +15,10 @@ template <class T> std::weak_ptr<T> make_weak_ptr(std::shared_ptr<T> ptr) { retu
 struct WebRTCServer {
 
 public:
-	void init();
+	void init(
+		boost::function<void(nlohmann::json)> callbackGathering,
+		boost::function<void(std::string)> callbackDatachannel
+	);
 
 	void initConnectionWithPeer(rtc::Description description);
 
@@ -22,6 +28,7 @@ public:
 
 private:
 	std::shared_ptr<rtc::PeerConnection> pc;
+	std::shared_ptr<rtc::DataChannel> dc;
 
 	std::optional<rtc::Description> peer;
 };

@@ -23,6 +23,9 @@ public:
     void send(const std::string& message);
 
     std::string receive();
+    void receiveAsync();
+
+    void run();
 
     void close();
 };

@@ -8,13 +8,15 @@
 #include <stdexcept>
 #include <utility>
 
-#include <nlohmann/json.hpp>
 
 using nlohmann::json;
 
 const int BUFFER_SIZE = 2048;
 
-void WebRTCServer::init() {
+void WebRTCServer::init(
+	boost::function<void(json)>callback,
+	boost::function<void(std::string)>callback_datachannel
+) {
 
 	rtc::InitLogger(rtc::LogLevel::Debug);
 
@@ -31,14 +33,18 @@ void WebRTCServer::init() {
 	pc->onStateChange(
 	    [](rtc::PeerConnection::State state) { std::cout << "State: " << state << std::endl; });
 
-	pc->onGatheringStateChange([wpc = make_weak_ptr(pc)](rtc::PeerConnection::GatheringState state) {
+	pc->onGatheringStateChange([wpc = make_weak_ptr(pc), callback](rtc::PeerConnection::GatheringState state) {
 		std::cout << "Gathering State: " << state << std::endl;
 		if (state == rtc::PeerConnection::GatheringState::Complete) {
 			if(auto pc = wpc.lock()) {
 				auto description = pc->localDescription();
-				json message = {{"type", description->typeString()},
-			                {"sdp", std::string(description.value())}};
-				std::cout << message << std::endl;
+				json message = {
+					{"id", "peerid"},
+					{"type", description->typeString()},
+			        {"sdp", std::string(description.value())}
+				};
+				
+				callback(message);
 			}
 		}
 	});
@@ -50,43 +56,40 @@ void WebRTCServer::init() {
 	auto track = pc->addTrack(media);
 
 
-	auto dc = pc->createDataChannel("ping-pong");
-   	dc->onOpen([id, wdc = make_weak_ptr(dc)]() {
-   	   if (auto dc = wdc.lock()) {
-   	      dc->send("Ping");
-   		}
-   	});
+    auto dc = pc->createDataChannel("ping-pong");
+    dc->onOpen([id, wdc = make_weak_ptr(dc)]() {
+		std::cout << "datachannel is open" << std::endl;
+    });
 
-   	dc->onMessage(nullptr, [id, wdc = make_weak_ptr(dc)](std::string msg) {
-       	std::cout << "Message from " << id << " received: " << msg << std::endl;
-       	if (auto dc = wdc.lock()) {
-			std::cout << "ping" << std::endl;
-       	    dc->send("Ping");
-       	}
-	});
+    dc->onMessage(nullptr, [id, wdc = make_weak_ptr(dc), callback_datachannel](std::string msg) {
+        std::cout << "Message from " << id << " received: " << msg << std::endl;
+
+		callback_datachannel(msg);
+    });
+
+	this->dc = dc;
 
 	pc->setLocalDescription();
 
-	std::shared_ptr<rtc::DataChannel> dc1;
 	pc->onDataChannel([&](std::shared_ptr<rtc::DataChannel> _dc) {
-	std::cout << "[Got a DataChannel with label: " << _dc->label() << "]" << std::endl;
-	dc1 = _dc;
+		std::cout << "[Got a DataChannel with label: " << _dc->label() << "]" << std::endl;
+		//dc1 = _dc;
 
-	dc1->onClosed(
-	    [&]() { std::cout << "[DataChannel closed: " << dc->label() << "]" << std::endl; });
+		_dc->onClosed(
+	 	   [&]() { std::cout << "[DataChannel closed: " << _dc->label() << "]" << std::endl; });
 
-	dc1->onMessage([](auto data) {
-		if (std::holds_alternative<std::string>(data)) {
-			std::cout << "[Received message: " << std::get<std::string>(data) << "]"
-			          << std::endl;
-		}
-		});
+		_dc->onMessage([](auto data) {
+			if (std::holds_alternative<std::string>(data)) {
+				std::cout << "[Received message: " << std::get<std::string>(data) << "]"
+				          << std::endl;
+			}
+			});
 	});
 
 }
 
 void WebRTCServer::initConnectionWithPeer(rtc::Description description) {
-
+	pc->setRemoteDescription(description);
 }
 
 void WebRTCServer::startVideoFetching() {
