@@ -85,6 +85,9 @@
             pc.ontrack = (evt) => {
                 const videoElement = document.getElementById('video-element');
                 videoElement.srcObject = evt.streams[0];
+
+                console.log("receive track");
+                
                 videoElement.play();
             };
 

@@ -55,6 +55,7 @@ void WebRTCServer::init(
 	media.addSSRC(ssrc, "video-send");
 	auto track = pc->addTrack(media);
 
+	this->track = track;
 
     auto dc = pc->createDataChannel("ping-pong");
     dc->onOpen([id, wdc = make_weak_ptr(dc)]() {
@@ -86,6 +87,10 @@ void WebRTCServer::init(
 			});
 	});
 
+}
+
+std::shared_ptr<rtc::Track> WebRTCServer::getTrack() {
+	return this->track;
 }
 
 void WebRTCServer::initConnectionWithPeer(rtc::Description description) {

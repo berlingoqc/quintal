@@ -1,5 +1,6 @@
 #include "camera_streamer.hpp"
 
+
 static GstFlowReturn new_sample (GstElement *sink, CVFrameQueue* data) {
     GstSample *sample;
 
@@ -32,7 +33,42 @@ static GstFlowReturn new_sample (GstElement *sink, CVFrameQueue* data) {
     return GST_FLOW_ERROR;
 }
 
-void CameraStreamer::init() {
+const rtc::SSRC ssrc = 42;
+static GstFlowReturn new_sample_2 (GstElement *sink, rtc::Track* track) {
+    GstSample *sample;
+
+
+    g_signal_emit_by_name (sink, "pull-sample", &sample);
+    if (sample) {
+        // Do something with the sample
+		GstBuffer *buffer = gst_sample_get_buffer(sample);
+  		GstMapInfo map;
+
+  		gst_buffer_map(buffer, &map, GST_MAP_READ);
+        gsize size = gst_buffer_get_size(buffer);
+
+		auto rtp = reinterpret_cast<rtc::RtpHeader *>(buffer);
+        rtp->setSsrc(ssrc);
+
+        //std::cout << size << std::endl;
+
+        if (track->isOpen()) {
+            GstBuffer *copy_buffer = gst_buffer_copy(buffer);
+			auto buff = reinterpret_cast<const std::byte *>(copy_buffer);
+
+            track->send(buff, size);
+            
+        }
+
+  		gst_buffer_unmap(buffer, &map);
+        gst_sample_unref (sample);
+        return GST_FLOW_OK;
+    }
+
+    return GST_FLOW_ERROR;
+}
+
+void CameraStreamer::init(std::shared_ptr<rtc::Track> track) {
 	gst_init (nullptr, nullptr);
 
     #ifdef __APPLE__
@@ -45,7 +81,7 @@ void CameraStreamer::init() {
 
 
     std::string gstreamer_pipeline = source_camera + " ! videoconvert ! video/x-raw,width=640,height=480,format=BGR ! tee name=t "
-                                     "t. ! queue ! videoconvert ! x264enc tune=zerolatency bitrate=1000 key-int-max=30 ! video/x-h264, profile=constrained-baseline ! rtph264pay pt=96 mtu=1200 ! udpsink host=127.0.0.1 port=6000 "
+                                     "t. ! queue ! videoconvert ! x264enc tune=zerolatency bitrate=1000 key-int-max=30 ! video/x-h264, profile=constrained-baseline ! rtph264pay pt=96 mtu=1000 ! udpsink host=127.0.0.1 port=6000 "
                                      "t. ! queue ! appsink name=appsink emit-signals=true ";
 
     pipeline = gst_parse_launch(gstreamer_pipeline.c_str(), &error);
@@ -58,6 +94,13 @@ void CameraStreamer::init() {
 
     sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
     g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), getQueue());
+
+
+/*
+    sinkH264 = gst_bin_get_by_name(GST_BIN(pipeline), "h264sink");
+    g_signal_connect (sinkH264, "new-sample", G_CALLBACK(new_sample_2), track.get());
+
+    */
 
     ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) {

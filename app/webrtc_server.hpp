@@ -26,9 +26,12 @@ public:
 
 	void stopVideoFetching();
 
+	std::shared_ptr<rtc::Track> getTrack();
+
 private:
 	std::shared_ptr<rtc::PeerConnection> pc;
 	std::shared_ptr<rtc::DataChannel> dc;
+	std::shared_ptr<rtc::Track> track;
 
 	std::optional<rtc::Description> peer;
 };
