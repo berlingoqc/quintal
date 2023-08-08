@@ -97,7 +97,7 @@
 
 
         function startWs() {
-            websocket = new WebSocket('ws://127.0.0.1:8000/' + "peerid");
+            websocket = new WebSocket('ws://192.168.2.148:8000/' + "peerid");
             websocket.onopen = () => {
                 console.log('OPEN');
             }

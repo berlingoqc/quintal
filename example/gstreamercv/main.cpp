@@ -4,7 +4,7 @@
 #include <gst/app/gstappsink.h>
 #include <opencv2/opencv.hpp>
 
-cv::CascadeClassifier face_cascade;
+//cv::CascadeClassifier face_cascade;
 
 
 // The appsink callback function
@@ -27,12 +27,12 @@ static GstFlowReturn new_sample (GstElement *sink, gpointer *data) {
   		cv::Mat frame(cv::Size(width, height), CV_8UC3, (char*)map.data, cv::Mat::AUTO_STEP);
 
 		// Perform face detection.
-  		std::vector<cv::Rect> faces;
-  		face_cascade.detectMultiScale(frame, faces);
+  		//std::vector<cv::Rect> faces;
+  		//face_cascade.detectMultiScale(frame, faces);
 
-  		for (size_t i = 0; i < faces.size(); i++) {
-			std::cout << faces[i] << std::endl;
-  		}
+  		//for (size_t i = 0; i < faces.size(); i++) {
+		//	std::cout << faces[i] << std::endl;
+  		//}
 
   		gst_buffer_unmap(buffer, &map);
         gst_sample_unref (sample);
@@ -45,10 +45,10 @@ static GstFlowReturn new_sample (GstElement *sink, gpointer *data) {
 int main(int argc, char *argv[]) {
 
 
-	if (!face_cascade.load("/opt/haarcascade_frontalface_default.xml")) {
-  		std::cerr << "Error loading face cascade\n";
-  		return -1;
-	}
+	//if (!face_cascade.load("/opt/haarcascade_frontalface_default.xml")) {
+  	//	std::cerr << "Error loading face cascade\n";
+  	//	return -1;
+	//}
 
 
     GstElement *pipeline, *sink;

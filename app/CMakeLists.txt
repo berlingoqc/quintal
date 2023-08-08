@@ -6,7 +6,6 @@ cmake_minimum_required (VERSION 3.8)
 include_directories (
     "${PROJECT_SOURCE_DIR}/libcontrol/include"
     "${PROJECT_SOURCE_DIR}/libfirmata/include"
-    "/usr/local/include"
 )
 
 add_executable (quintal_control
