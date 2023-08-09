@@ -15,10 +15,35 @@ const int BUFFER_SIZE = 2048;
 
 void WebRTCServer::init(
 	boost::function<void(json)>callback,
-	boost::function<void(std::string)>callback_datachannel
+	boost::function<void(std::string)>callback_datachannel,
+	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
 ) {
-
 	rtc::InitLogger(rtc::LogLevel::Debug);
+
+	this->startPC(callback, callback_datachannel, callbackTrack);
+}
+
+std::shared_ptr<rtc::Track> WebRTCServer::getTrack() {
+	return this->track;
+}
+
+void WebRTCServer::initConnectionWithPeer(rtc::Description description) {
+	pc->setRemoteDescription(description);
+}
+
+void WebRTCServer::startVideoFetching() {
+
+}
+
+void WebRTCServer::stopVideoFetching() {
+
+}
+
+void WebRTCServer::startPC(
+	boost::function<void(json)>callback,
+	boost::function<void(std::string)>callback_datachannel,
+	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
+) {
 
 	auto id = "random_id";
 	rtc::Configuration config;
@@ -26,7 +51,6 @@ void WebRTCServer::init(
    	std::cout << "STUN server is " << stunServer << std::endl;
    	config.iceServers.emplace_back(stunServer);
    	config.disableAutoNegotiation = true;
-	
 
 	pc = std::make_shared<rtc::PeerConnection>(config);
 
@@ -39,7 +63,7 @@ void WebRTCServer::init(
 			if(auto pc = wpc.lock()) {
 				auto description = pc->localDescription();
 				json message = {
-					{"id", "peerid"},
+					{"id", "mycustomid"},
 					{"type", description->typeString()},
 			        {"sdp", std::string(description.value())}
 				};
@@ -56,6 +80,8 @@ void WebRTCServer::init(
 	auto track = pc->addTrack(media);
 
 	this->track = track;
+
+	callbackTrack(this->track);
 
     auto dc = pc->createDataChannel("ping-pong");
     dc->onOpen([id, wdc = make_weak_ptr(dc)]() {
@@ -87,20 +113,13 @@ void WebRTCServer::init(
 			});
 	});
 
-}
-
-std::shared_ptr<rtc::Track> WebRTCServer::getTrack() {
-	return this->track;
-}
-
-void WebRTCServer::initConnectionWithPeer(rtc::Description description) {
-	pc->setRemoteDescription(description);
-}
-
-void WebRTCServer::startVideoFetching() {
-
-}
-
-void WebRTCServer::stopVideoFetching() {
-
+	pc->onStateChange([id, this, callback, callback_datachannel, callbackTrack](rtc::PeerConnection::State state) {
+        std::cout << "State: " << state << std::endl;
+        if (state == rtc::PeerConnection::State::Disconnected ||
+            state == rtc::PeerConnection::State::Failed ||
+            state == rtc::PeerConnection::State::Closed) {
+			pc->close();
+			this->startPC(callback, callback_datachannel, callbackTrack);
+        }
+    });
 }

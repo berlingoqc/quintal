@@ -7,7 +7,6 @@ static GstFlowReturn new_sample (GstElement *sink, CVFrameQueue* data) {
 
     g_signal_emit_by_name (sink, "pull-sample", &sample);
     if (sample) {
-        // Do something with the sample
 
 		GstBuffer *buffer = gst_sample_get_buffer(sample);
   		GstMapInfo map;
@@ -33,6 +32,7 @@ static GstFlowReturn new_sample (GstElement *sink, CVFrameQueue* data) {
     return GST_FLOW_ERROR;
 }
 
+/*
 const rtc::SSRC ssrc = 42;
 static GstFlowReturn new_sample_2 (GstElement *sink, rtc::Track* track) {
     GstSample *sample;
@@ -67,8 +67,9 @@ static GstFlowReturn new_sample_2 (GstElement *sink, rtc::Track* track) {
 
     return GST_FLOW_ERROR;
 }
+*/
 
-void CameraStreamer::init(std::shared_ptr<rtc::Track> track) {
+void CameraStreamer::init() {
 	gst_init (nullptr, nullptr);
 
     #ifdef __APPLE__
@@ -99,7 +100,6 @@ void CameraStreamer::init(std::shared_ptr<rtc::Track> track) {
 /*
     sinkH264 = gst_bin_get_by_name(GST_BIN(pipeline), "h264sink");
     g_signal_connect (sinkH264, "new-sample", G_CALLBACK(new_sample_2), track.get());
-
     */
 
     ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);

@@ -2,14 +2,12 @@
 
 #include <gst/gst.h>
 
-#include <rtc/rtc.hpp>
-
 #include "camera_frame_queue.hpp"
 
 struct CameraStreamer {
 
 public:
-	void init(std::shared_ptr<rtc::Track>);
+	void init();
 	CVFrameQueue* getQueue();
 
 private:

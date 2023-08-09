@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "docker:build": "docker build -t ghcr.io/berlingoqc/quintal/ui:latest .",
+    "docker:push": "docker push ghcr.io/berlingoqc/quintal/ui:latest",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

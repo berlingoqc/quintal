@@ -20,8 +20,6 @@
 const http = require('http');
 const websocket = require('websocket');
 
-const clients = {};
-
 const httpServer = http.createServer((req, res) => {
   console.log(`${req.method.toUpperCase()} ${req.url}`);
 
@@ -36,39 +34,94 @@ const httpServer = http.createServer((req, res) => {
   respond(404, 'Not Found');
 });
 
+/**
+ * How will it work ???
+ * 
+ * ok the signaling server map all devices with client (s)
+ * 
+ * when a device is running it's automatically connected to the websocket
+ * sending it's connection information
+ * 
+ * the client can query the list of device connected
+ * 
+ * when it want to open a connection it send it's connection information
+ * for it to initialize the connection
+ */
+
 const wsServer = new websocket.server({httpServer});
+
+const devices_path = "devices";
+const clients_path = "clients";
+
+const mapClients = {};
+const mapDevices = {};
+
 wsServer.on('request', (req) => {
   console.log(`WS  ${req.resource}`);
 
   const {path} = req.resourceURL;
+
+
   const splitted = path.split('/');
   splitted.shift();
-  const id = splitted[0];
+  const type = splitted[0];
+  const id = splitted[1];
+
+  if (type !== devices_path && type !== clients_path) {
+      return;
+  }
 
   const conn = req.accept(null, req.origin);
+
+  if (type === clients_path) {
+    conn.send(JSON.stringify(Object.values(mapDevices).map(x => x.message)));
+
+    mapClients[id] = { conn };
+  } else {
+    mapDevices[id] = { conn };
+  }
+
   conn.on('message', (data) => {
     if (data.type === 'utf8') {
-      console.log(`Client ${id} << ${data.utf8Data}`);
-
       const message = JSON.parse(data.utf8Data);
-      const destId = message.id;
-      const dest = clients[destId];
-      if (dest) {
-        message.id = id;
-        const data = JSON.stringify(message);
-        console.log(`Client ${destId} >> ${data}`);
-        dest.send(data);
-      } else {
-        console.error(`Client ${destId} not found`);
+
+      if (type === devices_path) {
+        console.log(`Devices ${id} << ${data.utf8Data}`);
+
+        Object.values(mapClients).forEach(client => {
+          client.conn.send(JSON.stringify(message))
+        });
+
+        mapDevices[id].message = message;
+
+      } else if (type === clients_path) {
+        console.log(`Clients ${id} << ${data.utf8Data}`);
+
+        // get the wright device from the request
+        const idTarget = message.id;
+        const device = mapDevices[idTarget];
+
+        console.log(mapDevices);
+
+          device.conn.send(JSON.stringify(message));
+
+        mapClients[id].message = message;
       }
     }
   });
   conn.on('close', () => {
-    delete clients[id];
-    console.error(`Client ${id} disconnected`);
+    if (type === clients_path) {
+      delete mapClients[id];
+      console.error(`Client ${id} disconnected`);
+    } else {
+      delete mapDevices[id];
+      console.error(`Device ${id} disconnected`);
+      Object.values(mapClients).forEach(client => {
+        client.conn.send(JSON.stringify({id, type: 'disconnect'}));
+      });
+    }
   });
 
-  clients[id] = conn;
 });
 
 const endpoint = process.env.PORT || '8000';
