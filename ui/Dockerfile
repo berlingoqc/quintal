@@ -6,5 +6,7 @@ RUN npm install
 COPY . .
 RUN npm run build --prod
 
-FROM nginx:alpine
-COPY --from=build-step /app/dist/ui /usr/share/nginx/html
+FROM nginx:alpine AS release
+
+COPY --from=build-step /app/dist/ /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf

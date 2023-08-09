@@ -101,9 +101,7 @@ wsServer.on('request', (req) => {
         const idTarget = message.id;
         const device = mapDevices[idTarget];
 
-        console.log(mapDevices);
-
-          device.conn.send(JSON.stringify(message));
+        device.conn.send(JSON.stringify(message));
 
         mapClients[id].message = message;
       }
@@ -127,7 +125,7 @@ wsServer.on('request', (req) => {
 const endpoint = process.env.PORT || '8000';
 const splitted = endpoint.split(':');
 const port = splitted.pop();
-const hostname = splitted.join(':') || '127.0.0.1';
+const hostname = splitted.join(':') || '0.0.0.0';
 
 httpServer.listen(port, hostname,
                   () => { console.log(`Server listening on ${hostname}:${port}`); });

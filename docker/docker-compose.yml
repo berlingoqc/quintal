@@ -22,9 +22,7 @@ services:
       - --min-port=49160
       - --max-port=49200
       - --realm=cars.growbe.ca
-      - --external-ip=$(EXTERNAL_IP)
-    environment:
-      - EXTERNAL_IP=216.209.231.236
+      - --external-ip=216.209.231.236
     ports:
       - "3478:3478/udp"
       - "3478:3478/tcp"
