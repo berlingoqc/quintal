@@ -9,4 +9,4 @@ fi
 #    ARGS="$ARGS --env-file ./docker/coverage.env --env RUSTFLAGS=-Cinstrument-coverage"
 #fi
 
-docker run $ARGS build_test_cpp "$@"
+docker run $ARGS ghcr.io/berlingoqc/quintal/crossbuild "$@"

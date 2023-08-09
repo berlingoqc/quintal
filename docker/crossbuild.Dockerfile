@@ -27,6 +27,6 @@ RUN apt-get install -yq nlohmann-json3-dev
 
 RUN apt-get install -yq git && git clone https://github.com/paullouisageneau/libdatachannel.git && \
 	cd libdatachannel && git submodule update --init --recursive --depth 1 && \
-	mkdir build && cd build && cmake .. && make && make install
+	mkdir build && cd build && CXX=arm-linux-gnueabi-g++ CC=arm-linux-gnueabi-gcc cmake .. && make && make install
 
 RUN apt-get install -yq libopencv-dev
