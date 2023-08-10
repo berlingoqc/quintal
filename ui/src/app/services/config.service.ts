@@ -18,7 +18,7 @@ export class ConfigService {
     if (hostname === "localhost") {
       this.urlSignaling = "ws://localhost:8000"
     } else {
-      this.urlSignaling = "wss://signaling." + hostname;
+      this.urlSignaling = "wss://signaling.cars.growbe.ca";
     }
   }
 

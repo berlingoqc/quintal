@@ -47,11 +47,11 @@ void WebRTCServer::startPC(
 
 	auto id = "random_id";
 	rtc::Configuration config;
-	std::string stunServer = "stun:stun.l.google.com:19302";
-	std::string turnServer = "turn:192.168.2.2:30000";
+	std::string stunServer = "stun:stun.relay.metered.ca:80";
+	std::string turnServer = "turn:1d5df4140ad2e51e190d2cc4:BggnkQ7ytzN7zepr@a.relay.metered.ca:80";
    	std::cout << "STUN server is " << stunServer << std::endl;
    	config.iceServers.emplace_back(stunServer);
-	//config.iceServers.emplace_back(turnServer);
+	config.iceServers.emplace_back(turnServer);
    	config.disableAutoNegotiation = true;
 
 	pc = std::make_shared<rtc::PeerConnection>(config);
