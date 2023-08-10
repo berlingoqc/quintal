@@ -10,11 +10,21 @@ export interface Server {
 })
 export class ConfigService {
 
-  constructor() { }
+
+  private urlSignaling = "";
+
+  constructor() {
+    const hostname = window.location.hostname;
+    if (hostname === "localhost") {
+      this.urlSignaling = "ws://localhost:8000"
+    } else {
+      this.urlSignaling = "wss://signaling." + hostname;
+    }
+  }
 
   getSignalingServer(): Server {
     return {
-      url: "ws://localhost:8000"
+      url: this.urlSignaling 
     };
   }
 }

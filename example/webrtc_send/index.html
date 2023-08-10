@@ -20,123 +20,48 @@
 
     <script>
 
-        let pc = null;
-        let dc = null;
+        const iceServers = [
+    // Test some TURN server
+    {
+        urls: 'turn:192.168.2.2:30000?transport=udp', 
+        username: '', 
+        credential: ''
+    }
+];
 
-        let websocket;
+const pc = new RTCPeerConnection({
+	iceServers
+});
 
-        async function waitGatheringComplete() {
-            return new Promise((resolve) => {
-                if (pc.iceGatheringState === 'complete') {
-                    resolve();
-                } else {
-                    pc.addEventListener('icegatheringstatechange', () => {
-                        if (pc.iceGatheringState === 'complete') {
-                            resolve();
-                        }
-                    });
-                }
-            });
-        }
+pc.onicecandidate = (e) => {
+    if (!e.candidate) return;
 
+    // Display candidate string e.g
+    // candidate:842163049 1 udp 1677729535 XXX.XXX.XX.XXXX 58481 typ srflx raddr 0.0.0.0 rport 0 generation 0 ufrag sXP5 network-cost 999
+    console.log(e.candidate.candidate);
 
-        async function createPeerConnection() {
-            pc = new RTCPeerConnection({
-                bundlePolicy: 'max-bundle',
-                iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }]
-            });
+    // If a srflx candidate was found, notify that the STUN server works!
+    if(e.candidate.type == "srflx"){
+        console.log("The STUN server is reachable!");
+        console.log(`   Your Public IP Address is: ${e.candidate.address}`);
+    }
 
-            pc.ondatachannel = (evt) => {
+    // If a relay candidate was found, notify that the TURN server works!
+    if(e.candidate.type == "relay"){
+        console.log("The TURN server is reachable !");
+    }
+};
 
-                console.log('ON DATA CHANNEL');
+// Log errors:
+// Remember that in most of the cases, even if its working, you will find a STUN host lookup received error
+// Chrome tried to look up the IPv6 DNS record for server and got an error in that process. However, it may still be accessible through the IPv4 address
+pc.onicecandidateerror = (e) => {
+    console.error(e);
+};
 
-                dc = evt.channel;
+pc.createDataChannel('ourcodeworld-rocks');
+pc.createOffer().then(offer => pc.setLocalDescription(offer));
 
-                dc.onopen = () => {
-                    console.log("IS open");
-
-
-                    window.addEventListener('keypress', () => {
-                        dc.send("{}");
-                        console.log("keydown");
-                    })
-                };
-
-                dc.onmessage = (evt) => {
-                    console.log('EVENT MESSAGE ', evt);
-                };
-
-                dc.onclose = () => {
-                    console.log('ON CLOSE');
-                };
-
-            };
-
-            pc.onicegatheringstatechange = (state) => {
-                if (pc.iceGatheringState === 'complete') {
-                    // We only want to provide an answer once all of our candidates have been added to the SDP.
-                    const answer = pc.localDescription;
-                    document.querySelector('textarea').value = JSON.stringify({ "type": answer.type, sdp: answer.sdp });
-                    document.querySelector('p').value = 'Please paste the answer in the sender application.';
-                    alert('Please paste the answer in the sender application.');
-                }
-            }
-
-            pc.ontrack = (evt) => {
-                const videoElement = document.getElementById('video-element');
-                videoElement.srcObject = evt.streams[0];
-
-                console.log("receive track");
-                
-                videoElement.play();
-            };
-
-
-            return pc;
-        }
-
-
-        function startWs() {
-            websocket = new WebSocket('ws://192.168.2.148:8000/' + "peerid");
-            websocket.onopen = () => {
-                console.log('OPEN');
-            }
-
-            websocket.onmessage = async (evt) => {
-                if (typeof evt.data !== 'string') {
-                    return;
-                }
-                const message = JSON.parse(evt.data);
-                console.log(message);
-                if (message.type == "offer") {
-                    const pc = await createPeerConnection();
-                    await pc.setRemoteDescription(message);
-
-                    await pc.setLocalDescription(await pc.createAnswer());
-                    await waitGatheringComplete();
-
-                    const answer = pc.localDescription;
-
-                    websocket.send(JSON.stringify({
-                        id: "mycustomid",
-                        type: answer.type,
-                        sdp: answer.sdp,
-                    }));
-
-                    console.log('awnser send');
-                }
-            }
-
-        }
-
-
-        document.getElementById('more').addEventListener('click', async () => {
-            dc.send("salut mon ami , joystick control de fou");
-        });
-
-        document.getElementById('submit').addEventListener('click', async () => {
-            startWs();
-        })
     </script>
 
 </body>

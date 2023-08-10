@@ -14,8 +14,6 @@ add_executable (quintal_control
     camera_streamer.cpp
     camera_analysis.cpp
 
-    ws_client.cpp
-    
     webrtc_server.cpp
 )
 

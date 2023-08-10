@@ -8,7 +8,6 @@
 #include "camera_analysis.hpp"
 #include "udp_sink_server.hpp"
 #include "webrtc_server.hpp"
-#include "ws_client.hpp"
 
 
 int main()
@@ -17,7 +16,7 @@ int main()
     boost::asio::io_service io_service;
     boost::thread_group threadGroup;
 
-    WebSocketClient wsClient;
+    rtc::WebSocket ws;
     CameraStreamer cameraStreamer;
     CameraAnalysis cameraAnalysis;
     WebRTCServer webRtcServer;
@@ -36,26 +35,23 @@ int main()
         cameraStreamer.init();
     });
 
-    wsClient.connect("localhost", "8000", "/devices/mycustomid");
-    
-    threadGroup.create_thread(
-        [&wsClient, &webRtcServer]()
-        {
-            bool receive_msg = false;
-            while(!receive_msg) {
-                std::string msg = wsClient.receive();
+    ws.onOpen([]() {
+        std::cout << "WebSocket open" << std::endl;
+    });
 
-                nlohmann::json message = nlohmann::json::parse(msg);
+    ws.onMessage([&webRtcServer](std::variant<rtc::binary, rtc::string> msg) {
+        if (std::holds_alternative<rtc::string>(msg)) {
+             nlohmann::json message =  nlohmann::json::parse(std::get<std::string>(msg));
 
 
                 auto it = message.find("id");
                 if (it == message.end())
-                    continue;
+                    return;
                 std::string id = it->get<std::string>();
 
                 it = message.find("type");
                 if (it == message.end())
-                    continue;
+                    return;
                 std::string type = it->get<std::string>();
 
                 if (type == "answer") {
@@ -65,15 +61,15 @@ int main()
 
                     webRtcServer.initConnectionWithPeer(description);
                 }
-            }
+        }
+    });
 
-            std::cout << "end of websocket task" << std::endl;
-        });
+    ws.open("wss://signaling.cars.growbe.ca/devices/mycustomid");
+    
 
+    boost::function<void(nlohmann::json)> callback = [&ws](nlohmann::json message) {
 
-    boost::function<void(nlohmann::json)> callback = [&wsClient](nlohmann::json message) {
-
-        wsClient.send(message.dump());
+        ws.send(message.dump());
 
         return;
     };

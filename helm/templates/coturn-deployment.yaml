@@ -21,8 +21,8 @@ spec:
         - args:
             - -n
             - --log-file=stdout
-            - --min-port=49160
-            - --max-port=49200
+            - --min-port=31000
+            - --max-port=31003
             - --realm=cars.growbe.ca
             - --external-ip=216.209.231.236
           image: instrumentisto/coturn
@@ -31,87 +31,13 @@ spec:
             - containerPort: 3478
               protocol: UDP
             - containerPort: 3478
-            - containerPort: 49160
+            - containerPort: 31000
               protocol: UDP
-            - containerPort: 49161
+            - containerPort: 31001
               protocol: UDP
-            - containerPort: 49162
+            - containerPort: 31002
               protocol: UDP
-            - containerPort: 49163
-              protocol: UDP
-            - containerPort: 49164
-              protocol: UDP
-            - containerPort: 49165
-              protocol: UDP
-            - containerPort: 49166
-              protocol: UDP
-            - containerPort: 49167
-              protocol: UDP
-            - containerPort: 49168
-              protocol: UDP
-            - containerPort: 49169
-              protocol: UDP
-            - containerPort: 49170
-              protocol: UDP
-            - containerPort: 49171
-              protocol: UDP
-            - containerPort: 49172
-              protocol: UDP
-            - containerPort: 49173
-              protocol: UDP
-            - containerPort: 49174
-              protocol: UDP
-            - containerPort: 49175
-              protocol: UDP
-            - containerPort: 49176
-              protocol: UDP
-            - containerPort: 49177
-              protocol: UDP
-            - containerPort: 49178
-              protocol: UDP
-            - containerPort: 49179
-              protocol: UDP
-            - containerPort: 49180
-              protocol: UDP
-            - containerPort: 49181
-              protocol: UDP
-            - containerPort: 49182
-              protocol: UDP
-            - containerPort: 49183
-              protocol: UDP
-            - containerPort: 49184
-              protocol: UDP
-            - containerPort: 49185
-              protocol: UDP
-            - containerPort: 49186
-              protocol: UDP
-            - containerPort: 49187
-              protocol: UDP
-            - containerPort: 49188
-              protocol: UDP
-            - containerPort: 49189
-              protocol: UDP
-            - containerPort: 49190
-              protocol: UDP
-            - containerPort: 49191
-              protocol: UDP
-            - containerPort: 49192
-              protocol: UDP
-            - containerPort: 49193
-              protocol: UDP
-            - containerPort: 49194
-              protocol: UDP
-            - containerPort: 49195
-              protocol: UDP
-            - containerPort: 49196
-              protocol: UDP
-            - containerPort: 49197
-              protocol: UDP
-            - containerPort: 49198
-              protocol: UDP
-            - containerPort: 49199
-              protocol: UDP
-            - containerPort: 49200
+            - containerPort: 31003
               protocol: UDP
           resources: {}
       restartPolicy: Always
