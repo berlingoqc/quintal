@@ -1,143 +1,66 @@
 
+#include <boost/asio.hpp>
 #include <iostream>
-#include <iomanip>
+#include <vector>
 
-#include "serialport.hpp"
-#include "firmata.hpp"
+#include <termios.h>
+#include <unistd.h>
 
-#include <rtc/rtc.hpp>
-#include <gst/gst.h>
-#include <gst/app/gstappsink.h>
-#include <opencv2/opencv.hpp>
+namespace asio = boost::asio;
 
 
-struct sysex_message {
-	char id;
-	int length;
-	char payload[100];
-};
+void enableRawMode() {
+    struct termios term;
+    tcgetattr(STDIN_FILENO, &term);
+    term.c_lflag &= ~(ICANON | ECHO);  // Disable canonical mode and echoing
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+}
 
-class DataReceiver {
-public:
-    DataReceiver(SerialPortWriter& writer) : sp_writter(writer) {}
-
-	SerialPortWriter& sp_writter; //(ioc, dev, braud_rate);
-	
-	std::string received_buffer_;
-
-    void onDataReceived(const char* data, size_t length) {
-		received_buffer_.append(data, length);
-
-		int start_index = -1;
-		int end_index = -1;
-		for (int i = 0; i < received_buffer_.length(); i++) {
-			if (received_buffer_[i] == FIRMATA_START_SYSEX) {
-				start_index = i;
-			}
-
-			if (received_buffer_[i] == FIRMATA_END_SYSEX) {
-				end_index = i;
-			}
-		}
-
-		if (start_index > -1 && end_index > -1) {
-			if (end_index > start_index) {
-				// extract message and move buffer arround.
-				auto sysex = sysex_message{ received_buffer_[start_index + 1], end_index - start_index - 3 };
-
-				received_buffer_.copy(sysex.payload, sysex.length, 2);
-
-				switch(sysex.id) {
-					case FIRMATA_REPORT_FIRMWARE:
-						std::cout << "REPORT FIRMWARE " << std::string(sysex.payload, sysex.length) << std::endl;
-						
-						{
-							std::string payload(4, ' ');
-
-							payload[0] = FIRMATA_START_SYSEX;
-							payload[1] = FIRMATA_PIN_STATE_QUERY;
-							payload[2] = 5;
-							payload[3] = FIRMATA_END_SYSEX;
-
-							sp_writter.writeData(payload);
-						}
-
-						break;
-					case FIRMATA_PIN_STATE_RESPONSE:
-						std::cout << "PIN STATE " << sysex.length << std::endl;
-						{
-							int pin = 4;
-							int value = 1;
-
-							int i = 0;
-							int res = 0;
-							std::string payload(4, ' ');
-
-							int port_num = pin / 8;
-							int port_value = 0;
-
-							for (i = 0; i < 8; i++) {
-								int p = port_num * 8 + i;
-
-								port_value |= (1<<i);
-							}
-
-							payload[0] = FIRMATA_DIGITAL_MESSAGE | port_num;
-							payload[1] = port_value & 0x7F;
-							payload[2] = (port_value >> 7) & 0x7F;
-
-							sp_writter.writeData(payload);
-
-						}
-
-						break;
-
-					default:
-						std::cout << "UNMAP " << std::hex << (0xFF & sysex.id) << " " << std::string(sysex.payload, sysex.length) << std::endl;
-						break;
-				}
-
-			} else {
-				std::cerr << "end index before start index" << std::endl;
-			}
-		}
+void disableRawMode() {
+    struct termios term;
+    tcgetattr(STDIN_FILENO, &term);
+    term.c_lflag |= (ICANON | ECHO);  // Re-enable canonical mode and echoing
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+}
 
 
-    }
-};
 
 int main() {
+	try {
+        FirmataClient client("/dev/ttyACM0");
+        client.getFirmwareInfo();
 
-	/*
-	gst_init(nullptr, nullptr);
-	std::string pipeline_str = "avfvideosrc ! videoconvert ! videoscale ! video/x-raw,width=640,height=480 ! queue ! x264enc tune=zerolatency bitrate=1000 key-int-max=30 ! video/x-h264, profile=constrained-baseline ! rtph264pay pt=96 mtu=1200 ! udpsink host=127.0.0.1 port=6000";
-	GError* error = nullptr;
-	auto pipeline = gst_parse_launch(pipeline_str.c_str(), &error);
-	if (error) {
-		std::cout << "failed to start gst pipe " << error << std::endl;
- 	   	g_error_free(error);
-  		return -1;
-	}	
-	*/
+		enableRawMode();  // Enable raw mode to get keypresses immediately
 
-    asio::io_context ioc;
+        std::cout << "Press 'w' to set pin HIGH, release to set pin LOW. Press 'q' to quit." << std::endl;
+        
+        char ch;
+        bool isWPressed = false;
 
-	std::cout << "test" << std::endl;
+        while (true) {
+            ch = std::cin.get();  // Read a character
 
-	const auto dev = "/dev/ttyACM0";
-	const auto braud_rate = 57600;
+            if (ch == 'w' && !isWPressed) {
+				isWPressed = true;
+		        client.setPinHigh(4);
+  		        client.setPinLow(5);
 
-	SerialPortWriter sp_writter(ioc, dev, braud_rate);
+            } else if (ch == 'w' && isWPressed) {
+                isWPressed = false;
+		        client.setPinLow(4);
+  		        client.setPinLow(5);
+				std::cout << "stopping" << std::endl;
+            } else if (ch == 'q') {
+                break;
+			}
+            
+        }
 
-	DataReceiver receiver(sp_writter);
-	const auto callback = [&receiver](const char* data, size_t length) {
-		receiver.onDataReceived(data, length);
-	};
+        disableRawMode();  // Restore terminal to normal mode
+    } catch (const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+    }
 
-    SerialPortReader sp(make_strand(ioc), dev, braud_rate, callback);
-
-    sp.read_async(SerialPortReader::ignore_timeout);
-
-    ioc.run();
-
+    return 0;
+    return 0;
 }
