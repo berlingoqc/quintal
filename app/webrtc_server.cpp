@@ -90,11 +90,12 @@ void WebRTCServer::startPC(
 		std::cout << "datachannel is open" << std::endl;
     });
 
-    dc->onMessage(nullptr, [id, wdc = make_weak_ptr(dc), callback_datachannel](std::string msg) {
-        std::cout << "Message from " << id << " received: " << msg << std::endl;
+    dc->onMessage([id, wdc = make_weak_ptr(dc), callback_datachannel](rtc::binary msg) {
+		std::string string1(reinterpret_cast<const char *>(&msg[0]), msg.size());
+        std::cout << "Message from " << id << " received: " << string1 << std::endl;
 
-		callback_datachannel(msg);
-    });
+		//callback_datachannel(msg);
+    }, nullptr);
 
 	this->dc = dc;
 

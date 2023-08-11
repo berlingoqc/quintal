@@ -13,6 +13,10 @@ export class PeerConnctionService {
   onTrack = new BehaviorSubject<RTCTrackEvent | null>(null);
   connectionStatus = new BehaviorSubject<boolean>(false);
 
+  get controlDataChannel(): RTCDataChannel | undefined {
+    return this.dc;
+  }
+
   constructor() {
     this.start();
 
@@ -62,10 +66,6 @@ export class PeerConnctionService {
 
       this.dc.onopen = () => {
         console.log('is open');
-        window.addEventListener('keypress', () => {
-                        this.dc?.send("{}");
-                        console.log("keydown");
-                    })
       };
 
       this.dc.onmessage = (evt) => {

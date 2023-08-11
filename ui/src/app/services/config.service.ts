@@ -20,6 +20,8 @@ export class ConfigService {
     } else {
       this.urlSignaling = "wss://signaling.cars.growbe.ca";
     }
+
+    this.urlSignaling = "wss://signaling.cars.growbe.ca";
   }
 
   getSignalingServer(): Server {

@@ -6,8 +6,9 @@
 #include <termios.h>
 #include <unistd.h>
 
-namespace asio = boost::asio;
+#include <firmata_client.hpp>
 
+namespace asio = boost::asio;
 
 void enableRawMode() {
     struct termios term;

@@ -15,6 +15,7 @@ endif()
 find_package(LibDataChannel REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(Protobuf REQUIRED)
 
 if (APPLE)
     find_package(Boost REQUIRED COMPONENTS system thread)
@@ -52,8 +53,8 @@ include_directories(
 )
 
 add_subdirectory("libfirmata")
+add_subdirectory("proto")
 add_subdirectory("libcontrol")
 add_subdirectory("app")
-
 add_subdirectory("example")
 

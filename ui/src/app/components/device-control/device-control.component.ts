@@ -1,5 +1,6 @@
 import { AfterContentInit, AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { take } from 'rxjs';
+import { ControlChannelService } from 'src/app/services/control-channel.service';
 import { PeerConnctionService } from 'src/app/services/peer-connction.service';
 import { SignalingService } from 'src/app/services/signaling.service';
 
@@ -16,6 +17,7 @@ export class DeviceControlComponent implements AfterViewInit {
   constructor(
     public signalingService: SignalingService,
     public peerConnectionService: PeerConnctionService,
+    public controlChannelService: ControlChannelService,
   ) {}
 
   ngAfterViewInit(): void {
