@@ -46,7 +46,6 @@ SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})
 
 include_directories(
 	${Boost_INCLUDE_DIRS}
-    libutils
 	libfirmata
     protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite
 	${GSTREAMER_INCLUDE_DIRS}
@@ -54,7 +53,6 @@ include_directories(
 )
 
 add_subdirectory("libfirmata")
-add_subdirectory("libcontrol")
 add_subdirectory("app")
 add_subdirectory("example")
 
