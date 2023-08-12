@@ -17,7 +17,7 @@ struct WebRTCServer {
 public:
 	void init(
 		boost::function<void(nlohmann::json)> callbackGathering,
-		boost::function<void(std::string)> callbackDatachannel,
+		boost::function<void(rtc::binary)> callbackDatachannel,
 		boost::function<void(std::shared_ptr<rtc::Track>)> callbackTrack
 	);
 
@@ -39,7 +39,7 @@ private:
 
 	void startPC(
 		boost::function<void(nlohmann::json)>callback,
-		boost::function<void(std::string)>callback_datachannel,
+		boost::function<void(rtc::binary)>callback_datachannel,
 		boost::function<void(std::shared_ptr<rtc::Track>)> callbackTrack
 	);
 };

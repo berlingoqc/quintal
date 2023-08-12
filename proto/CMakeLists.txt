@@ -18,6 +18,3 @@ add_library(${PROJECT_NAME} ${SOURCE_FILES})
 # Include the directory where the protobuf generated files are 
 # along with other include directories you might have
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
-# Link the library with protobuf libraries
-target_link_libraries(${PROJECT_NAME} ${PROTOBUF_LIBRARIES})

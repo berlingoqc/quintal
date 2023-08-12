@@ -15,7 +15,7 @@ const int BUFFER_SIZE = 2048;
 
 void WebRTCServer::init(
 	boost::function<void(json)>callback,
-	boost::function<void(std::string)>callback_datachannel,
+	boost::function<void(rtc::binary)>callback_datachannel,
 	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
 ) {
 	rtc::InitLogger(rtc::LogLevel::Debug);
@@ -41,15 +41,18 @@ void WebRTCServer::stopVideoFetching() {
 
 void WebRTCServer::startPC(
 	boost::function<void(json)>callback,
-	boost::function<void(std::string)>callback_datachannel,
+	boost::function<void(rtc::binary)>callback_datachannel,
 	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
 ) {
 
 	auto id = "random_id";
+
 	rtc::Configuration config;
+
 	std::string stunServer = "stun:stun.relay.metered.ca:80";
 	std::string turnServer = "turn:1d5df4140ad2e51e190d2cc4:BggnkQ7ytzN7zepr@a.relay.metered.ca:80";
    	std::cout << "STUN server is " << stunServer << std::endl;
+
    	config.iceServers.emplace_back(stunServer);
 	config.iceServers.emplace_back(turnServer);
    	config.disableAutoNegotiation = true;
@@ -91,10 +94,7 @@ void WebRTCServer::startPC(
     });
 
     dc->onMessage([id, wdc = make_weak_ptr(dc), callback_datachannel](rtc::binary msg) {
-		std::string string1(reinterpret_cast<const char *>(&msg[0]), msg.size());
-        std::cout << "Message from " << id << " received: " << string1 << std::endl;
-
-		//callback_datachannel(msg);
+		callback_datachannel(msg);
     }, nullptr);
 
 	this->dc = dc;

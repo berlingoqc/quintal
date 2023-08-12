@@ -9,6 +9,10 @@
 #include "udp_sink_server.hpp"
 #include "webrtc_server.hpp"
 
+#include "firmata_client.hpp"
+
+#include <msg_header.pb.h>
+#include <control.pb.h>
 
 int main()
 {
@@ -20,6 +24,10 @@ int main()
     CameraStreamer cameraStreamer;
     CameraAnalysis cameraAnalysis;
     WebRTCServer webRtcServer;
+
+    FirmataClient client("/dev/ttyACM0");
+    client.getFirmwareInfo();
+
 
     UDPSinkServer server(io_service, 6000); 
 
@@ -74,8 +82,30 @@ int main()
         return;
     };
 
-    boost::function<void(std::string)> callback_datachannel = [](std::string message) {
-        std::cout << "receive input" << std::endl;
+    boost::function<void(rtc::binary)> callback_datachannel = [](rtc::binary message) {
+
+        auto header = static_cast<MsgHeader>(message.at(0));
+
+        switch (header) {
+            case CONTROL_EVENT:
+                {
+                    std::cout << "receive control payload" << std::endl;
+                    ControlEvent controlEvent;
+                    /*
+                    bool success = controlEvent.ParseFromArray(message.data() + 1, message.size() - 1);
+
+                    if (success) {
+                        std::cout << "control my this : " << controlEvent.y() << " " << controlEvent.x() << std::endl;
+                    } else {
+                        std::cerr << "failed to parse a CONTROL_EVENT payload" << std::endl;
+                    }
+                    */
+                }
+                break;;
+            default:
+                break;;
+        }
+
         return;
     };
 
@@ -87,7 +117,6 @@ int main()
 
 
     webRtcServer.init(callback, callback_datachannel, callback_track);
-
 
 
     io_service.run();

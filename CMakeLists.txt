@@ -12,6 +12,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message("debug mode")
 endif()
 
+
+SET (Protobuf_USE_STATIC_LIBS OFF)
+
 find_package(LibDataChannel REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(nlohmann_json REQUIRED)
@@ -53,7 +56,6 @@ include_directories(
 )
 
 add_subdirectory("libfirmata")
-add_subdirectory("proto")
 add_subdirectory("libcontrol")
 add_subdirectory("app")
 add_subdirectory("example")

@@ -31,6 +31,17 @@ public:
         std::cout << std::endl;
     }
 
+    void setPWM(uint8_t pin, uint16_t value) {
+        if (value > 0x3FFF) {
+            std::cerr << "PWM value out of range. Maximum is 16383." << std::endl;
+            return;
+        }
+
+        uint8_t command = 0xE0 | (pin & 0x0F);  // 0xE0 is the ANALOG_MESSAGE command
+        writeByte(command | (value & 0x7F));
+        writeByte(value >> 7);
+    }
+
     void setPinMode(uint8_t pin, uint8_t mode) {
         writeByte(0xF4);
         writeByte(pin);

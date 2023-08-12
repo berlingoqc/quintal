@@ -38,6 +38,8 @@ int main() {
         char ch;
         bool isWPressed = false;
 
+        client.setPWM(3, 16383);
+
         while (true) {
             ch = std::cin.get();  // Read a character
 
