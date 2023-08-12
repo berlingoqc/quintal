@@ -6,15 +6,11 @@ cmake_minimum_required (VERSION 3.8)
 include_directories (
     "${PROJECT_SOURCE_DIR}/libcontrol/include"
     "${PROJECT_SOURCE_DIR}/libfirmata/include"
+    "${PROTOBUF_INCLUDE_DIR}"
+
 )
 
-set(PROTO_FILES ../proto/control.proto ../proto/msg_header.proto)
-
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
-
-# Your source files
-set(SOURCE_FILES ${PROTO_SRCS})
-
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ../proto/control.proto ../proto/msg_header.proto)
 
 add_executable (quintal_control
     main.cpp
@@ -24,7 +20,8 @@ add_executable (quintal_control
 
     webrtc_server.cpp
 
-    ${SOURCE_FILES}
+    ${PROTO_SRCS}
+    ${PROTO_HDRS}
 )
 
 if(APPLE)
@@ -37,11 +34,13 @@ endif ()
 target_include_directories(quintal_control PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(quintal_control PRIVATE
+    ${PROTOBUF_LIBRARY}
     LibDataChannel::LibDataChannel
     ${LINK_THREAD}
     libcontrol
     libfirmata
-    ${PROTOBUF_LIBRARIES}
+
     ${GSTREAMER_LIBRARIES}
     ${OpenCV_LIBS}
+
 )

@@ -11,8 +11,10 @@
 
 #include "firmata_client.hpp"
 
-#include <msg_header.pb.h>
-#include <control.pb.h>
+#include "pb_decode.h"
+
+#include "msg_header.pb.h"
+#include "control.pb.h"
 
 int main()
 {
@@ -82,7 +84,7 @@ int main()
         return;
     };
 
-    boost::function<void(rtc::binary)> callback_datachannel = [](rtc::binary message) {
+    boost::function<void(rtc::binary)> callback_datachannel = [&client](rtc::binary message) {
 
         auto header = static_cast<MsgHeader>(message.at(0));
 
@@ -91,15 +93,34 @@ int main()
                 {
                     std::cout << "receive control payload" << std::endl;
                     ControlEvent controlEvent;
-                    /*
                     bool success = controlEvent.ParseFromArray(message.data() + 1, message.size() - 1);
 
                     if (success) {
-                        std::cout << "control my this : " << controlEvent.y() << " " << controlEvent.x() << std::endl;
+                        if (controlEvent.y() > 0) {
+                            client.setPinLow(5);
+  		                    client.setPinHigh(4);
+                        } else if (controlEvent.y() < 0) {
+                            client.setPinLow(4);
+  		                    client.setPinHigh(5);
+                        } else {
+                            client.setPinLow(4);
+  		                    client.setPinLow(5);
+                        }
+
+                        if (controlEvent.x() > 0) {
+                            client.setPinLow(6);
+  		                    client.setPinHigh(7);
+                        } else if (controlEvent.x() < 0) {
+                            client.setPinLow(7);
+  		                    client.setPinHigh(6);
+                        } else {
+                            client.setPinLow(6);
+  		                    client.setPinLow(7);
+                        }
+
                     } else {
                         std::cerr << "failed to parse a CONTROL_EVENT payload" << std::endl;
                     }
-                    */
                 }
                 break;;
             default:

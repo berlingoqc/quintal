@@ -13,12 +13,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 
-SET (Protobuf_USE_STATIC_LIBS OFF)
-
 find_package(LibDataChannel REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(Protobuf CONFIG REQUIRED)
 
 if (APPLE)
     find_package(Boost REQUIRED COMPONENTS system thread)
@@ -43,14 +42,13 @@ else()
 endif()
 
 
-
-
 SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})
 
 include_directories(
 	${Boost_INCLUDE_DIRS}
     libutils
 	libfirmata
+    protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite
 	${GSTREAMER_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 )

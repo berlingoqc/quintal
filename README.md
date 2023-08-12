@@ -51,4 +51,5 @@ in my main application. And to integrate with a signaling server.
 
 
 
-
+ vcpkg install protobuf
+cmake .. -DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake
