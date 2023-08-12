@@ -52,7 +52,8 @@ include_directories(
     ${OpenCV_INCLUDE_DIRS}
 )
 
-add_subdirectory("libfirmata")
+add_subdirectory("firmata")
+
 add_subdirectory("app")
 add_subdirectory("example")
 

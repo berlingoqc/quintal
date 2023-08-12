@@ -4,12 +4,12 @@
 cmake_minimum_required (VERSION 3.8)
 
 include_directories (
-    "${PROJECT_SOURCE_DIR}/libfirmata/include"
+    "${PROJECT_SOURCE_DIR}/firmata/include"
     "${PROTOBUF_INCLUDE_DIR}"
 
 )
 
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ../proto/control.proto ../proto/msg_header.proto ../proto/config.proto)
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ../../proto/control.proto ../../proto/msg_header.proto ../../proto/config.proto)
 
 add_executable (quintal_control
     main.cpp
@@ -36,7 +36,7 @@ target_link_libraries(quintal_control PRIVATE
     ${PROTOBUF_LIBRARY}
     LibDataChannel::LibDataChannel
     ${LINK_THREAD}
-    libfirmata
+    firmata
 
     ${GSTREAMER_LIBRARIES}
     ${OpenCV_LIBS}
