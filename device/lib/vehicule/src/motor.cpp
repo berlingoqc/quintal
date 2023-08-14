@@ -4,16 +4,18 @@
 
 DCMotor::DCMotor(
 	std::shared_ptr<IotControl> control,
-	int8_t int1,
-	int8_t int2,
-	int8_t pwm
-) : control_(control) {
+	int32_t int1,
+	int32_t int2,
+	int32_t pwm
+) : control_(control), pin_int1_(int1), pin_int2_(int2), pin_pwm_(pwm) {
 	this->control_->setPinMode(this->pin_int1_, 1);
 	this->control_->setPinMode(this->pin_int2_, 1);
 	this->control_->setPinMode(this->pin_pwm_, 1);
+
+	std::cout << "dm motor initialize " << this->pin_int1_ << " " << this->pin_int2_ << std::endl;
 }
 
-void DCMotor::setPower(int16_t power) {
+void DCMotor::setPower(int32_t power) {
 	this->control_->setPWM(this->pin_pwm_, power);
 }
 

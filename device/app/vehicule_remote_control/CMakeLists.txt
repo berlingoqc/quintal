@@ -8,9 +8,6 @@ include_directories (
     "${PROJECT_SOURCE_DIR}/lib/webrtc_server/includes"
     "${PROJECT_SOURCE_DIR}/lib/vehicule/includes"
     "${PROJECT_SOURCE_DIR}/lib/utils/includes"
-    "${PROJECT_SOURCE_DIR}/build/lib/quintal_proto"
-    "${PROTOBUF_INCLUDE_DIR}"
-    "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 add_executable (quintal_control

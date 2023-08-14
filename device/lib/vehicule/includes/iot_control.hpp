@@ -7,10 +7,10 @@
 class IotControl {
 
 public:
-	virtual void setPinMode(uint8_t pin, uint8_t mode) = 0;
-	virtual void setPinHigh(uint8_t pin) = 0;
-	virtual void setPinLow(uint8_t pin) = 0;
-	virtual void setPWM(uint8_t pin, uint16_t value) = 0;
+	virtual void setPinMode(int32_t pin, int32_t mode) = 0;
+	virtual void setPinHigh(int32_t pin) = 0;
+	virtual void setPinLow(int32_t pin) = 0;
+	virtual void setPWM(int32_t pin, int32_t value) = 0;
 };
 
 class FirmataIotControl : public IotControl {
@@ -18,10 +18,10 @@ class FirmataIotControl : public IotControl {
 public:
 	FirmataIotControl(const std::string& port);
 
-	void setPinMode(uint8_t pin, uint8_t mode);
-	void setPinHigh(uint8_t pin);
-	void setPinLow(uint8_t pin);
-	void setPWM(uint8_t pin, uint16_t value);
+	void setPinMode(int32_t pin, int32_t mode);
+	void setPinHigh(int32_t pin);
+	void setPinLow(int32_t pin);
+	void setPWM(int32_t pin, int32_t value);
 
 private:
 	FirmataClient firmataClient_;

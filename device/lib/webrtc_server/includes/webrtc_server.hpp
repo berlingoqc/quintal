@@ -10,12 +10,17 @@
 
 #include <rtc/rtc.hpp>
 
+#include "config.pb.h"
+
 template <class T> std::weak_ptr<T> make_weak_ptr(std::shared_ptr<T> ptr) { return ptr; };
 
 struct WebRTCServer {
 
 public:
 	void init(
+		const std::string& id,
+		const WebRTCConfig& webRtcConfig,
+		const VideoStreamConfig& videoStreamingConfig,
 		boost::function<void(nlohmann::json)> callbackGathering,
 		boost::function<void(rtc::binary)> callbackDatachannel,
 		boost::function<void(std::shared_ptr<rtc::Track>)> callbackTrack
@@ -38,6 +43,9 @@ private:
 
 
 	void startPC(
+		const std::string& id,
+		const WebRTCConfig& webRtcConfig,
+		const VideoStreamConfig& videoStreamingConfig,
 		boost::function<void(nlohmann::json)>callback,
 		boost::function<void(rtc::binary)>callback_datachannel,
 		boost::function<void(std::shared_ptr<rtc::Track>)> callbackTrack

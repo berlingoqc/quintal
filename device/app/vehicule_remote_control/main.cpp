@@ -1,6 +1,7 @@
 // STD
 #include <iostream>
 #include <map>
+#include <format>
 
 // BOOST
 #include <boost/asio.hpp>
@@ -139,12 +140,13 @@ int main()
     boost::asio::io_service io_service;
     boost::thread_group threadGroup;
 
+    CameraAnalysis cameraAnalysis;
+
+    // maybe bundle all of those logic together
     rtc::WebSocket ws;
     CameraStreamer cameraStreamer;
-    CameraAnalysis cameraAnalysis;
     WebRTCServer webRtcServer;
-
-    UDPSinkServer server(io_service, 6000); 
+    UDPSinkServer server(io_service, config.video_stream().udp_port()); 
 
     auto reference_queue = cameraStreamer.getQueue();
 
@@ -185,7 +187,13 @@ int main()
         }
     });
 
-    ws.open("wss://signaling.cars.growbe.ca/devices/mycustomid");
+    ws.open(
+        std::format(
+            "{}/devices/{}",
+            config.signaling_config().url(),
+            config.id()
+        )
+    );
     
 
     boost::function<void(nlohmann::json)> callback = [&ws](nlohmann::json message) {
@@ -242,8 +250,12 @@ int main()
         return;
     };
 
-
-    webRtcServer.init(callback, callback_datachannel, callback_track);
+    webRtcServer.init(
+        config.id(), config.web_rtc(),
+        config.video_stream(),
+        callback, callback_datachannel,
+        callback_track
+    );
 
     io_service.run();
 }

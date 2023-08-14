@@ -9,4 +9,4 @@ fi
 #    ARGS="$ARGS --env-file ./docker/coverage.env --env RUSTFLAGS=-Cinstrument-coverage"
 #fi
 
-docker run $ARGS ghcr.io/berlingoqc/quintal/crossbuild "$@"
+docker run $ARGS pibuild "$@"

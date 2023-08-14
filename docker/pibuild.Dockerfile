@@ -31,7 +31,7 @@ RUN apt-get install -yq git curl zip unzip tar
 
 RUN git clone https://github.com/Microsoft/vcpkg.git && ./vcpkg/bootstrap-vcpkg.sh
 
-RUN ./vcpkg/vcpkg install protobuf protobuf:arm-linux protobuf:arm64-linux
+RUN ./vcpkg/vcpkg install protobuf
 #RUN ./vcpkg/vcpkg install libdatachannel libdatachannel:arm-linux libdatachannel:arm64-linux
 #RUN ./vcpkg/vcpkg install libdatachannel libdatachannel:arm-linux libdatachannel:arm64-linux
 #RUN ./vcpkg/vcpkg install boost-filesystem:arm64-linux boost-system:arm64-linux boost-asio[ssl]:arm64-linux boost-beast:arm64-linux

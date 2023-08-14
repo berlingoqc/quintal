@@ -7,12 +7,12 @@ class DCMotor {
 public:
 	DCMotor(
 		std::shared_ptr<IotControl> control,
-		int8_t int1,
-		int8_t int2,
-		int8_t pwm
+		int32_t int1,
+		int32_t int2,
+		int32_t pwm
 	);
 
-	void setPower(int16_t power);
+	void setPower(int32_t power);
 	void forward();
 	void backward();
 	void stop();
@@ -20,7 +20,7 @@ public:
 private:
 	std::shared_ptr<IotControl> control_;
 
-	int8_t pin_int1_;
-	int8_t pin_int2_;
-	int8_t pin_pwm_;
+	int32_t pin_int1_;
+	int32_t pin_int2_;
+	int32_t pin_pwm_;
 };

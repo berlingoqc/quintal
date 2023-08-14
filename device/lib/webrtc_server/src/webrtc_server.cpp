@@ -14,13 +14,16 @@ using nlohmann::json;
 const int BUFFER_SIZE = 2048;
 
 void WebRTCServer::init(
+	const std::string& id,
+	const WebRTCConfig& webRtcConfig,
+	const VideoStreamConfig& videoStreamingConfig,
 	boost::function<void(json)>callback,
 	boost::function<void(rtc::binary)>callback_datachannel,
 	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
 ) {
 	rtc::InitLogger(rtc::LogLevel::Debug);
 
-	this->startPC(callback, callback_datachannel, callbackTrack);
+	this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack);
 }
 
 std::shared_ptr<rtc::Track> WebRTCServer::getTrack() {
@@ -40,21 +43,20 @@ void WebRTCServer::stopVideoFetching() {
 }
 
 void WebRTCServer::startPC(
+	const std::string& id,
+	const WebRTCConfig& webRtcConfig,
+	const VideoStreamConfig& videoStreamingConfig,
 	boost::function<void(json)>callback,
 	boost::function<void(rtc::binary)>callback_datachannel,
 	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
 ) {
 
-	auto id = "random_id";
-
 	rtc::Configuration config;
 
-	std::string stunServer = "stun:stun.relay.metered.ca:80";
-	std::string turnServer = "turn:1d5df4140ad2e51e190d2cc4:BggnkQ7ytzN7zepr@a.relay.metered.ca:80";
-   	std::cout << "STUN server is " << stunServer << std::endl;
+	for (const auto iceServer : webRtcConfig.ice_servers()) {
+   		config.iceServers.emplace_back(iceServer);
+	}
 
-   	config.iceServers.emplace_back(stunServer);
-	config.iceServers.emplace_back(turnServer);
    	config.disableAutoNegotiation = true;
 
 	pc = std::make_shared<rtc::PeerConnection>(config);
@@ -62,13 +64,13 @@ void WebRTCServer::startPC(
 	pc->onStateChange(
 	    [](rtc::PeerConnection::State state) { std::cout << "State: " << state << std::endl; });
 
-	pc->onGatheringStateChange([wpc = make_weak_ptr(pc), callback](rtc::PeerConnection::GatheringState state) {
+	pc->onGatheringStateChange([wpc = make_weak_ptr(pc), callback, id](rtc::PeerConnection::GatheringState state) {
 		std::cout << "Gathering State: " << state << std::endl;
 		if (state == rtc::PeerConnection::GatheringState::Complete) {
 			if(auto pc = wpc.lock()) {
 				auto description = pc->localDescription();
 				json message = {
-					{"id", "mycustomid"},
+					{"id", id},
 					{"type", description->typeString()},
 			        {"sdp", std::string(description.value())}
 				};
@@ -78,9 +80,9 @@ void WebRTCServer::startPC(
 		}
 	});
 
-	const rtc::SSRC ssrc = 42;
+	const rtc::SSRC ssrc = videoStreamingConfig.ssrc();
 	rtc::Description::Video media("video");
-	media.addH264Codec(96); // Must match the payload type of the external h264 RTP stream
+	media.addH264Codec(videoStreamingConfig.h264_codec()); // Must match the payload type of the external h264 RTP stream
 	media.addSSRC(ssrc, "video-send");
 	auto track = pc->addTrack(media);
 
@@ -118,13 +120,13 @@ void WebRTCServer::startPC(
 			});
 	});
 
-	pc->onStateChange([id, this, callback, callback_datachannel, callbackTrack](rtc::PeerConnection::State state) {
+	pc->onStateChange([id, this, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack](rtc::PeerConnection::State state) {
         std::cout << "State: " << state << std::endl;
         if (state == rtc::PeerConnection::State::Disconnected ||
             state == rtc::PeerConnection::State::Failed ||
             state == rtc::PeerConnection::State::Closed) {
 			pc->close();
-			this->startPC(callback, callback_datachannel, callbackTrack);
+			this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack);
         }
     });
 }
