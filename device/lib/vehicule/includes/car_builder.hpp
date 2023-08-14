@@ -11,11 +11,14 @@
 class CarBuilder {
 
 public:
+	static std::map<std::string, std::shared_ptr<IotControl>> getControl(const google::protobuf::Map<std::string, IoTControlConfig>& config);
+
 	CarBuilder(std::map<std::string, std::shared_ptr<IotControl>>& controls);
 
-	std::shared_ptr<Car> buildCar(CarConfig& config);
+
+
+	std::shared_ptr<Car> buildCar(const CarConfig& config);
 
 private:
 	std::map<std::string, std::shared_ptr<IotControl>> controls_;
-
 };

@@ -43,7 +43,7 @@ void loadConfig(const char* path, Config* config) {
         auto firmataConfig = new FirmataConfig();
         firmataConfig->set_device_name("/dev/ttyACM0");
 
-        IoTControl iotControl;
+        IoTControlConfig iotControl;
         iotControl.set_type(IoTControlType::FIRMATA);
         iotControl.set_allocated_firmata(firmataConfig);
 
@@ -126,8 +126,15 @@ int main()
 
     loadConfig("./config.json", &config);
 
-
     std::cout << "starting car with ID " << config.id() << std::endl;
+
+
+    auto controls = CarBuilder::getControl(config.controls());
+
+    CarBuilder carBuilder(controls);
+    
+    auto car = carBuilder.buildCar(config.car());
+
 
     boost::asio::io_service io_service;
     boost::thread_group threadGroup;

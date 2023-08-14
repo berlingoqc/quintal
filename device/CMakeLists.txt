@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 SET ( WEBSOCKETPP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/websocketpp" CACHE PATH "Directory for websocketpp" )
 
+SET ( LIBDATACHANNEL_LIBRARIES LibDataChannel::LibDataChannel)
+
 enable_testing()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

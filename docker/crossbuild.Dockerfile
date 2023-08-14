@@ -38,6 +38,11 @@ RUN git clone https://github.com/Microsoft/vcpkg.git && ./vcpkg/bootstrap-vcpkg.
 
 RUN ./vcpkg/vcpkg install protobuf protobuf:arm-linux protobuf:arm64-linux
 RUN ./vcpkg/vcpkg install libdatachannel libdatachannel:arm-linux libdatachannel:arm64-linux
-RUN ./vcpkg/vcpkg install opencv opencv:arm-linux opencv:arm64-linux
-
-
+RUN ./vcpkg/vcpkg install libdatachannel libdatachannel:arm-linux libdatachannel:arm64-linux
+RUN ./vcpkg/vcpkg install boost-filesystem:arm64-linux boost-system:arm64-linux boost-asio[ssl]:arm64-linux boost-beast:arm64-linux
+RUN ./vcpkg/vcpkg install boost-filesystem:arm-linux boost-system:arm-linux boost-asio[ssl]:arm-linux boost-beast:arm-linux
+RUN ./vcpkg/vcpkg install boost-filesystem boost-system boost-asio[ssl] boost-beast
+RUN ./vcpkg/vcpkg install nlohmann-json nlohmann-json:arm64-linux nlohmann-json:arm-linux
+RUN apt-get -yq install flex bison
+RUN apt-get -yq install nasam
+RUN ./vcpkg/vcpkg install gstreamer gstreamer:arm64-linux gstreamer:arm-linux

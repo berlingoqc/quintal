@@ -1,9 +1,15 @@
 
 #include "car_builder.hpp"
 
+std::map<std::string, std::shared_ptr<IotControl>> CarBuilder::getControl(const google::protobuf::Map<std::string, IoTControlConfig>& config) {
+	auto map = std::map<std::string, std::shared_ptr<IotControl>>();
+
+	return map;
+}
+
 CarBuilder::CarBuilder(std::map<std::string, std::shared_ptr<IotControl>>& controls) : controls_(controls) {}
 
-std::shared_ptr<Car> CarBuilder::buildCar(CarConfig& config) {
+std::shared_ptr<Car> CarBuilder::buildCar(const CarConfig& config) {
 
 	auto steering_config = config.steering();
 	auto throtle_config = config.throtle();

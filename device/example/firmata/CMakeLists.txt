@@ -6,10 +6,5 @@ include_directories (
 
 add_executable (example_firmata main.cpp)
 
-if(APPLE)
-elseif(UNIX)
-	set(LINK_THREAD pthread rt boost_thread)
-endif ()
 
-
-target_link_libraries(example_firmata PRIVATE ${LINK_THREAD} LibDataChannel::LibDataChannel firmata ${GSTREAMER_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(example_firmata PRIVATE ${LINK_THREAD} firmata)
