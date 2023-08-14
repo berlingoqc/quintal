@@ -23,3 +23,10 @@ void Car::backward(int16_t power) {
 	this->front_.setPower(power);
 	this->front_.backward();
 }
+
+void Car::stopSteer() {
+	this->front_.stop();
+}
+void Car::stopThrotle() {
+	this->back_.stop();
+}

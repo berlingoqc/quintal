@@ -3,11 +3,12 @@
 #include <gst/gst.h>
 
 #include "camera_frame_queue.hpp"
+#include "config.pb.h"
 
 struct CameraStreamer {
 
 public:
-	void init();
+	void init(const VideoStreamConfig& streamConfig);
 	CVFrameQueue* getQueue();
 
 private:

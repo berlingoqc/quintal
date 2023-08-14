@@ -1,8 +1,14 @@
-
+#include <ostream>
 #include "car_builder.hpp"
 
 std::map<std::string, std::shared_ptr<IotControl>> CarBuilder::getControl(const google::protobuf::Map<std::string, IoTControlConfig>& config) {
 	auto map = std::map<std::string, std::shared_ptr<IotControl>>();
+
+	for (const auto &pair : config) {
+		auto config = pair.second;
+
+		map[pair.first] = std::make_shared<FirmataIotControl>(config.firmata().device_name());
+	}	
 
 	return map;
 }

@@ -44,5 +44,5 @@ RUN ./vcpkg/vcpkg install boost-filesystem:arm-linux boost-system:arm-linux boos
 RUN ./vcpkg/vcpkg install boost-filesystem boost-system boost-asio[ssl] boost-beast
 RUN ./vcpkg/vcpkg install nlohmann-json nlohmann-json:arm64-linux nlohmann-json:arm-linux
 RUN apt-get -yq install flex bison
-RUN apt-get -yq install nasam
+RUN apt-get -yq install nasm
 RUN ./vcpkg/vcpkg install gstreamer gstreamer:arm64-linux gstreamer:arm-linux

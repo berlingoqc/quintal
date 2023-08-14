@@ -16,7 +16,6 @@ public:
 	CarBuilder(std::map<std::string, std::shared_ptr<IotControl>>& controls);
 
 
-
 	std::shared_ptr<Car> buildCar(const CarConfig& config);
 
 private:

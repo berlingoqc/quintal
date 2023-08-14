@@ -60,6 +60,10 @@ include_directories(
     protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite
 	${GSTREAMER_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
+
+	${PROJECT_SOURCE_DIR}/build/lib/quintal_proto
+    "${PROTOBUF_INCLUDE_DIR}"
+    "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 add_subdirectory("lib")

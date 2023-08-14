@@ -1,15 +1,19 @@
+// STD
 #include <iostream>
 #include <map>
 
+// BOOST
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
 #include <boost/thread/thread.hpp>
 
+// WEBRTC_SERVER
 #include "camera_streamer.hpp"
 #include "camera_analysis.hpp"
 #include "udp_sink_server.hpp"
 #include "webrtc_server.hpp"
 
+// FIRMATA
 #include "firmata_client.hpp"
 
 // VEHICULEE
@@ -26,7 +30,7 @@
 #include "control.pb.h"
 #include "config.pb.h"
 
-
+// PROTOBUF
 #include <google/protobuf/util/json_util.h>
 
 
@@ -117,8 +121,6 @@ void loadConfig(const char* path, Config* config) {
 
 }
 
-
-
 int main()
 {
 
@@ -128,13 +130,11 @@ int main()
 
     std::cout << "starting car with ID " << config.id() << std::endl;
 
-
     auto controls = CarBuilder::getControl(config.controls());
 
     CarBuilder carBuilder(controls);
     
     auto car = carBuilder.buildCar(config.car());
-
 
     boost::asio::io_service io_service;
     boost::thread_group threadGroup;
@@ -143,9 +143,6 @@ int main()
     CameraStreamer cameraStreamer;
     CameraAnalysis cameraAnalysis;
     WebRTCServer webRtcServer;
-
-    FirmataClient client("/dev/ttyACM0");
-    client.getFirmwareInfo();
 
     UDPSinkServer server(io_service, 6000); 
 
@@ -156,7 +153,7 @@ int main()
     });
 
     threadGroup.create_thread([&]() {
-        cameraStreamer.init();
+        cameraStreamer.init(config.video_stream());
     });
 
     ws.onOpen([]() {
@@ -199,7 +196,7 @@ int main()
         return;
     };
 
-    boost::function<void(rtc::binary)> callback_datachannel = [&client](rtc::binary message) {
+    boost::function<void(rtc::binary)> callback_datachannel = [&car](rtc::binary message) {
 
         auto header = static_cast<MsgHeader>(message.at(0));
 
@@ -212,25 +209,19 @@ int main()
 
                     if (success) {
                         if (controlEvent.y() > 0) {
-                            client.setPinLow(5);
-  		                    client.setPinHigh(4);
+                            car->forward(255);
                         } else if (controlEvent.y() < 0) {
-                            client.setPinLow(4);
-  		                    client.setPinHigh(5);
+                            car->backward(255);
                         } else {
-                            client.setPinLow(4);
-  		                    client.setPinLow(5);
+                            car->stopThrotle();
                         }
 
                         if (controlEvent.x() > 0) {
-                            client.setPinLow(6);
-  		                    client.setPinHigh(7);
+                            car->steerLeft(255);
                         } else if (controlEvent.x() < 0) {
-                            client.setPinLow(7);
-  		                    client.setPinHigh(6);
+                            car->steerLeft(255);
                         } else {
-                            client.setPinLow(6);
-  		                    client.setPinLow(7);
+                            car->stopSteer();
                         }
 
                     } else {

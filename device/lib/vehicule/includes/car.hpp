@@ -13,6 +13,9 @@ public:
 	void forward(int16_t power);
 	void backward(int16_t power);
 
+	void stopSteer();
+	void stopThrotle();
+
 private:
 	DCMotor front_;
 	DCMotor back_;

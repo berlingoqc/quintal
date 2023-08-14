@@ -1,9 +1,18 @@
 #include "camera_streamer.hpp"
 
+#include <format>
 
-static GstFlowReturn new_sample (GstElement *sink, CVFrameQueue* data) {
+struct SampleCallbackData {
+
+public:
+    int32_t width;
+    int32_t height;
+
+    CVFrameQueue* queue;
+};
+
+static GstFlowReturn new_sample (GstElement *sink, SampleCallbackData* data) {
     GstSample *sample;
-
 
     g_signal_emit_by_name (sink, "pull-sample", &sample);
     if (sample) {
@@ -13,16 +22,16 @@ static GstFlowReturn new_sample (GstElement *sink, CVFrameQueue* data) {
 
   		gst_buffer_map(buffer, &map, GST_MAP_READ);
 
-  		int width = 640;
-  		int height = 480;
+  		int width = data->width;
+  		int height = data->height;
 
-        std::unique_lock<std::mutex> lock(data->mtx);
+        std::unique_lock<std::mutex> lock(data->queue->mtx);
 
   		cv::Mat frame(cv::Size(width, height), CV_8UC3, (char*)map.data, cv::Mat::AUTO_STEP);
 
-        data->frameQueue.push(frame);
+        data->queue->frameQueue.push(frame);
         lock.unlock();
-        data->condVar.notify_one();
+        data->queue->condVar.notify_one();
 
   		gst_buffer_unmap(buffer, &map);
         gst_sample_unref (sample);
@@ -69,21 +78,22 @@ static GstFlowReturn new_sample_2 (GstElement *sink, rtc::Track* track) {
 }
 */
 
-void CameraStreamer::init() {
+void CameraStreamer::init(
+    const VideoStreamConfig& streamConfig
+) {
+    SampleCallbackData callbackData;
+    callbackData.queue = &this->queue;
+    callbackData.height = streamConfig.height();
+    callbackData.width = streamConfig.width();
 	gst_init (nullptr, nullptr);
 
-    #ifdef __APPLE__
-        std::string source_camera = "avfvideosrc device-index=0";
-    #elif __linux__
-        std::string source_camera = "v4l2src device=/dev/video0";
-    #else
-        throw std::runtime_error("Unknown system for gstreamer video source");
-    #endif
+    std::string source_camera = streamConfig.gstreamer_source();
 
-
-    std::string gstreamer_pipeline = source_camera + " ! videoconvert ! video/x-raw,width=640,height=480,format=BGR ! tee name=t "
-                                     "t. ! queue ! videoconvert ! x264enc tune=zerolatency bitrate=1000 key-int-max=30 ! video/x-h264, profile=constrained-baseline ! rtph264pay pt=96 mtu=1000 ! udpsink host=127.0.0.1 port=6000 "
-                                     "t. ! queue ! appsink name=appsink emit-signals=true ";
+    std::string gstreamer_pipeline = source_camera + 
+        std::format(" ! videoconvert ! video/x-raw,width={},height={},format={} ! tee name=t ", streamConfig.width(), streamConfig.height(), streamConfig.format()) +
+        std::format("t. ! queue ! videoconvert ! x264enc tune={} bitrate={} key-int-max={} ! video/x-h264, profile={} ! rtph264pay pt={} mtu={} ! udpsink host={} port={} ",
+            streamConfig.h264_enc_tune(), streamConfig.bitrate(), streamConfig.keyintmax(), streamConfig.h264_profile(), streamConfig.h264_codec(), streamConfig.mtu(), streamConfig.udp_host(), streamConfig.udp_port()) +
+        std::format("t. ! queue ! appsink name=appsink emit-signals=true ");
 
     pipeline = gst_parse_launch(gstreamer_pipeline.c_str(), &error);
 
@@ -94,7 +104,7 @@ void CameraStreamer::init() {
     }
 
     sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
-    g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), getQueue());
+    g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), &callbackData);
 
 
 /*

@@ -7,10 +7,10 @@
 class IotControl {
 
 public:
-	virtual void setPinMode(uint8_t pin, uint8_t mode);
-	virtual void setPinHigh(uint8_t pin);
-	virtual void setPinLow(uint8_t pin);
-	virtual void setPWM(uint8_t pin, uint16_t value);
+	virtual void setPinMode(uint8_t pin, uint8_t mode) = 0;
+	virtual void setPinHigh(uint8_t pin) = 0;
+	virtual void setPinLow(uint8_t pin) = 0;
+	virtual void setPWM(uint8_t pin, uint16_t value) = 0;
 };
 
 class FirmataIotControl : public IotControl {
