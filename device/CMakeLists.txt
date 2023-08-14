@@ -20,7 +20,7 @@ find_package(Protobuf REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
 
 if (APPLE)
-    find_package(Boost REQUIRED COMPONENTS system thread)
+    find_package(Boost REQUIRED COMPONENTS system thread filesystem)
     find_library(GSTREAMER_LIBRARIES
         NAMES GStreamer
         PATHS /Library/Frameworks/GStreamer.framework
@@ -35,25 +35,32 @@ if (APPLE)
     )
 
     link_directories(${GSTREAMER_LIBRARIES}/Libraries)
+
+	set(LINK_THREAD Boost::thread)
+
 else()
-    find_package(Boost REQUIRED COMPONENTS system)
+    find_package(Boost REQUIRED COMPONENTS system filesystem)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
-endif()
 
+	set(LINK_THREAD pthread rt boost_thread)
+endif()
 
 SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})
 
 include_directories(
 	${Boost_INCLUDE_DIRS}
-	libfirmata
+	firmata
+    quintal_proto
+    webrtc_server
+    vehicule
+    utils
     protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite
 	${GSTREAMER_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 )
 
-add_subdirectory("firmata")
-
-add_subdirectory("app")
+add_subdirectory("lib")
 add_subdirectory("example")
+add_subdirectory("app")
 

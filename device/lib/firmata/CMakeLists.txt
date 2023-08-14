@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project (firmata VERSION 0.0.1 LANGUAGES CXX)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/includes)
 
 set ( SRC src/firmata_client.cpp )
 

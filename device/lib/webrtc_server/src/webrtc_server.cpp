@@ -95,7 +95,9 @@ void WebRTCServer::startPC(
 
     dc->onMessage([id, wdc = make_weak_ptr(dc), callback_datachannel](rtc::binary msg) {
 		callback_datachannel(msg);
-    }, nullptr);
+    }, [](rtc::string msg) {
+		std::cout << "string msg " << msg << std::endl;
+	});
 
 	this->dc = dc;
 

@@ -70,13 +70,20 @@ message WebRTCConfig {
 
 }
 
+message SignalingConfig {
+	string url = 1;
+}
+
 
 message Config {
 
-	map<string, IoTControl> controls = 1;
+	string id = 1;
 
-	WebRTCConfig web_rtc = 2;
-	VideoStreamConfig video_stream = 3;
+	map<string, IoTControl> controls = 2;
+
+	WebRTCConfig web_rtc = 3;
+	VideoStreamConfig video_stream = 4;
+	SignalingConfig signaling_config = 5;
 
 	oneof vehicule {
 		CarConfig car = 10;
