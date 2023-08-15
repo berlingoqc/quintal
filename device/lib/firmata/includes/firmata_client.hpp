@@ -6,6 +6,9 @@
 
 namespace asio = boost::asio;
 
+#define FIRMATA_LSB(x)					((x) & 0x7F)
+#define FIRMATA_MSB(x)					(((x) >> 7) & 0x7F)
+
 class FirmataClient {
 public:
     FirmataClient(const std::string& port) 
@@ -31,15 +34,18 @@ public:
         std::cout << std::endl;
     }
 
-    void setPWM(uint8_t pin, uint16_t value) {
-        if (value > 0x3FFF) {
-            std::cerr << "PWM value out of range. Maximum is 16383." << std::endl;
-            return;
-        }
+    void setPWM(uint8_t pin, uint32_t value) {
+            
 
-        uint8_t command = 0xE0 | (pin & 0x0F);  // 0xE0 is the ANALOG_MESSAGE command
-        writeByte(command | (value & 0x7F));
-        writeByte(value >> 7);
+        // Message format: command byte, 7 lower bits of value, 7 higher bits of value.
+        unsigned char msg[3] = {
+            static_cast<unsigned char>(0xE0 | (pin & 0x0F)),
+            static_cast<unsigned char>(value & 0x7F),          // This gets the lower 7 bits
+            static_cast<unsigned char>((value >> 7) & 0x7F)   // This gets the upper 7 bits
+        };
+
+        boost::asio::write(serial, boost::asio::buffer(msg, 3));
+
     }
 
     void setPinMode(uint8_t pin, uint8_t mode) {
@@ -78,11 +84,16 @@ private:
         asio::write(serial, asio::buffer(&byte, 1));
     }
 
+    void writeBytes(uint8_t* array, int32_t size) {
+        asio::write(serial, asio::buffer(array, size));
+    }
+
     uint8_t readByte() {
         uint8_t byte;
         asio::read(serial, asio::buffer(&byte, 1));
         return byte;
     }
+
 
 	void setDigitalPinState(uint8_t pin, uint8_t state) {
         uint8_t portNumber = pin / 8;  // Firmata uses 8-pin ports

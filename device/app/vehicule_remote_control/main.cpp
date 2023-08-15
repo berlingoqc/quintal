@@ -1,12 +1,13 @@
 // STD
 #include <iostream>
 #include <map>
-#include <format>
+//#include <format>
 
 // BOOST
 #include <boost/asio.hpp>
 #include <boost/function.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/format.hpp> 
 
 // WEBRTC_SERVER
 #include "camera_streamer.hpp"
@@ -188,11 +189,7 @@ int main()
     });
 
     ws.open(
-        std::format(
-            "{}/devices/{}",
-            config.signaling_config().url(),
-            config.id()
-        )
+        (boost::format("%1%/devices/%2%") %  config.signaling_config().url() % config.id()).str()
     );
     
 
@@ -211,9 +208,10 @@ int main()
         switch (header) {
             case CONTROL_EVENT:
                 {
-                    std::cout << "receive control payload" << std::endl;
                     ControlEvent controlEvent;
                     bool success = controlEvent.ParseFromArray(message.data() + 1, message.size() - 1);
+
+                    std::cout << "receive control payload " << controlEvent.y() << " " << controlEvent.x() << std::endl;
 
                     if (success) {
                         if (controlEvent.y() > 0) {

@@ -28,8 +28,8 @@ void disableRawMode() {
 
 int main() {
 	try {
-        FirmataClient client("/dev/ttyACM0");
-        client.getFirmwareInfo();
+        FirmataClient client("/dev/pts/19");
+        //client.getFirmwareInfo();
 
 		enableRawMode();  // Enable raw mode to get keypresses immediately
 
@@ -38,20 +38,26 @@ int main() {
         char ch;
         bool isWPressed = false;
 
-        client.setPWM(3, 16383);
+		client.setPinMode(3, 3);
+		client.setPinMode(4, 1);
+		client.setPinMode(5, 1);
+
+        client.setPWM(3, 1);
+		
+        client.setPinLow(4);
+  		client.setPinHigh(5);
 
         while (true) {
             ch = std::cin.get();  // Read a character
 
             if (ch == 'w' && !isWPressed) {
 				isWPressed = true;
-		        client.setPinHigh(4);
-  		        client.setPinLow(5);
+
+                client.setPWM(3, 255);
 
             } else if (ch == 'w' && isWPressed) {
                 isWPressed = false;
-		        client.setPinLow(4);
-  		        client.setPinLow(5);
+                client.setPWM(3, 128);
 				std::cout << "stopping" << std::endl;
             } else if (ch == 'q') {
                 break;

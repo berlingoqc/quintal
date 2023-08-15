@@ -12,7 +12,7 @@ DCMotor::DCMotor(
 	this->control_->setPinMode(this->pin_int2_, 1);
 	this->control_->setPinMode(this->pin_pwm_, 1);
 
-	std::cout << "dm motor initialize " << this->pin_int1_ << " " << this->pin_int2_ << std::endl;
+	std::cout << "dm motor initialize " << this->pin_int1_ << " " << this->pin_int2_ << " pwm " << this->pin_pwm_ << std::endl;
 }
 
 void DCMotor::setPower(int32_t power) {

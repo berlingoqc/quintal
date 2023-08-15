@@ -1,6 +1,6 @@
 #include "camera_streamer.hpp"
 
-#include <format>
+#include <boost/format.hpp>
 
 struct SampleCallbackData {
 
@@ -90,10 +90,10 @@ void CameraStreamer::init(
     std::string source_camera = streamConfig.gstreamer_source();
 
     std::string gstreamer_pipeline = source_camera + 
-        std::format(" ! videoconvert ! video/x-raw,width={},height={},format={} ! tee name=t ", streamConfig.width(), streamConfig.height(), streamConfig.format()) +
-        std::format("t. ! queue ! videoconvert ! x264enc tune={} bitrate={} key-int-max={} ! video/x-h264, profile={} ! rtph264pay pt={} mtu={} ! udpsink host={} port={} ",
-            streamConfig.h264_enc_tune(), streamConfig.bitrate(), streamConfig.keyintmax(), streamConfig.h264_profile(), streamConfig.h264_codec(), streamConfig.mtu(), streamConfig.udp_host(), streamConfig.udp_port()) +
-        std::format("t. ! queue ! appsink name=appsink emit-signals=true ");
+        (boost::format(" ! videoconvert ! video/x-raw,width=%1%,height=%2%,format=%3% ! tee name=t ") % streamConfig.width() % streamConfig.height() % streamConfig.format()).str() +
+        (boost::format("t. ! queue ! videoconvert ! x264enc tune=%1% bitrate=%2% key-int-max=%3% ! video/x-h264, profile=%4% ! rtph264pay pt=%5% mtu=%6% ! udpsink host=%7% port=%8% ") %
+            streamConfig.h264_enc_tune() % streamConfig.bitrate() % streamConfig.keyintmax() % streamConfig.h264_profile() % streamConfig.h264_codec() % streamConfig.mtu() % streamConfig.udp_host() % streamConfig.udp_port()).str() +
+        (boost::format("t. ! queue ! appsink name=appsink emit-signals=true ")).str();
 
     pipeline = gst_parse_launch(gstreamer_pipeline.c_str(), &error);
 
