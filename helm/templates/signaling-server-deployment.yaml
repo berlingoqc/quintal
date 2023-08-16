@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: signaling-server
+  name: signaling-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: signaling-server
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: signaling-server
+    spec:
+      containers:
+        - args:
+            - node
+            - ./signaling-server.js
+          image: ghcr.io/berlingoqc/quintal/signaling-server:latest
+          name: signaling-server
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          resources: {}
+      imagePullSecrets:
+      - name: ghcr
+      restartPolicy: Always
+status: {}

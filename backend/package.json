@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "docker:build": "docker build -t ghcr.io/berlingoqc/quintal/signaling-server:latest .",
+    "docker:push": "docker push ghcr.io/berlingoqc/quintal/signaling-server:latest",
+    "build": ""
+  },
+  "dependencies": {
+    "websocket": "^1.0.34"
+  }
+}

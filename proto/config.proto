@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+
+message DCMotorConfig {
+	int32 int1 = 1;
+	int32 int2 = 2;
+	int32 power = 3;
+}
+
+message MotorConfig {
+	string iot_control = 1;
+
+	oneof motor_type {
+		DCMotorConfig dc = 2;
+	}
+
+}
+
+message CarConfig {
+	MotorConfig steering = 1;
+	MotorConfig throtle = 2;
+}
+
+enum IoTControlType {
+	INBOARD_GPIO = 0;
+	FIRMATA = 1;
+}
+
+message FirmataConfig {
+	string device_name = 1;
+}
+
+message IoTControlConfig {
+	IoTControlType type = 1;
+	oneof config {
+		FirmataConfig firmata = 2;
+	}
+}
+
+
+
+message VideoStreamConfig {
+	int32 ssrc = 1;
+	int32 h264_codec = 2;
+
+	int32 width = 3;
+	int32 height = 4;
+
+	string gstreamer_source = 5;
+
+	string format = 6;
+
+	int32 bitrate = 7;
+
+	int32 keyintmax = 8;
+
+	string h264_enc_tune = 9;
+
+	string h264_profile = 10;
+
+	int32 mtu = 11;
+
+	int32 udp_port = 12;
+	string udp_host = 13;
+}
+
+
+message WebRTCConfig {
+	repeated string ice_servers = 1;
+
+}
+
+message SignalingConfig {
+	string url = 1;
+}
+
+
+message Config {
+
+	string id = 1;
+
+	map<string, IoTControlConfig> controls = 2;
+
+	WebRTCConfig web_rtc = 3;
+	VideoStreamConfig video_stream = 4;
+	SignalingConfig signaling_config = 5;
+
+	oneof vehicule {
+		CarConfig car = 10;
+	}
+
+}

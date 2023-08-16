@@ -1,0 +1,33 @@
+version: '3'
+services:
+  signaling-server:
+    image: ghcr.io/berlingoqc/quintal/signaling-server:latest
+    networks:
+      - net
+    command: node ./signaling-server.js
+    ports:
+      - '0.0.0.0:8000:8000'
+  ui:
+    image: ghcr.io/berlingoqc/quintal/ui:latest
+    networks:
+      - net
+    ports:
+      - '0.0.0.0:8080:80'
+  coturn:
+    image: instrumentisto/coturn
+    restart: always
+    command:
+      - -n
+      - --log-file=stdout
+      - --min-port=49160
+      - --max-port=49200
+      - --realm=cars.growbe.ca
+      - --external-ip=216.209.231.236
+    ports:
+      - "3478:3478/udp"
+      - "3478:3478/tcp"
+      - "49160-49200:49160-49200/udp"
+
+networks:
+  net:
+    driver: bridge
