@@ -124,7 +124,7 @@ export class PeerConnctionService {
     const answer = this.pc?.localDescription;
 
     return {
-      id: "mycustomid",
+      id: (offer as any).id,
       type: answer?.type,
       sdp: answer?.sdp,
     };

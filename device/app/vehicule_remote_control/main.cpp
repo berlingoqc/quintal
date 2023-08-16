@@ -88,8 +88,8 @@ void loadConfig(const char* path, Config* config) {
         config->set_allocated_signaling_config(signalingConfig);
 
         auto rtcConfig = new WebRTCConfig();
-        rtcConfig->add_ice_servers("stun:stun.relay.metered.ca:80");
-	    rtcConfig->add_ice_servers("turn:1d5df4140ad2e51e190d2cc4:BggnkQ7ytzN7zepr@a.relay.metered.ca:80");
+        rtcConfig->add_ice_servers("stun:stun.l.google.com:19302");
+	    rtcConfig->add_ice_servers("turn:username1:key1@turn.cars.growbe.ca:3478");
 
         config->set_allocated_web_rtc(rtcConfig);
 
