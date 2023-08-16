@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+enum MsgHeader {
+    CONTROL_EVENT = 0;
+}

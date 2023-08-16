@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: coturn
+  name: coturn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: coturn
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: coturn
+    spec:
+      containers:
+        - args:
+            - -n
+            - --log-file=stdout
+            - --min-port=31000
+            - --max-port=31003
+            - --realm=cars.growbe.ca
+            - --external-ip=216.209.231.236
+          image: instrumentisto/coturn
+          name: coturn
+          ports:
+            - containerPort: 3478
+              protocol: UDP
+            - containerPort: 3478
+            - containerPort: 31000
+              protocol: UDP
+            - containerPort: 31001
+              protocol: UDP
+            - containerPort: 31002
+              protocol: UDP
+            - containerPort: 31003
+              protocol: UDP
+          resources: {}
+      restartPolicy: Always
+status: {}

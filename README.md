@@ -51,4 +51,13 @@ in my main application. And to integrate with a signaling server.
 
 
 
+<<<<<<< HEAD
 
+=======
+ vcpkg install protobuf
+cmake .. -DCMAKE_TOOLCHAIN_FILE=/opt/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../../../vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAK
+E_TOOLCHAIN_FILE=../toolchain_armhf.cmake -DVCPKG_TARGET_TRIPLET=arm64-linux
+>>>>>>> 33dee72fcbfde26fb4cfb1a9cca57be0e23bfc59

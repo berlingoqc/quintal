@@ -1,0 +1,10 @@
+<p>devices-selection works!</p>
+
+<div *ngFor="let device of signalingService.signalingServerDevices | async">
+
+	<p>{{device.id}}</p>
+
+	<button (click)="onConnectClick(device)">connect</button>
+</div>
+
+<app-device-control *ngIf="peerConnectionService.connectionStatus | async"></app-device-control>
