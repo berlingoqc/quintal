@@ -10,7 +10,7 @@ DCMotor::DCMotor(
 ) : control_(control), pin_int1_(int1), pin_int2_(int2), pin_pwm_(pwm) {
 	this->control_->setPinMode(this->pin_int1_, 1);
 	this->control_->setPinMode(this->pin_int2_, 1);
-	this->control_->setPinMode(this->pin_pwm_, 1);
+	this->control_->setPinMode(this->pin_pwm_, 3);
 
 	std::cout << "dm motor initialize " << this->pin_int1_ << " " << this->pin_int2_ << " pwm " << this->pin_pwm_ << std::endl;
 }
