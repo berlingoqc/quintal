@@ -4,7 +4,10 @@ cmake_minimum_required (VERSION 3.8)
 project("webrtc_server" VERSION 0.0.1 LANGUAGES CXX)
 
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/includes)
+include_directories(
+    ${PROJECT_SOURCE_DIR}/lib/video_analysis/includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/includes
+)
 
 set ( SRC src/camera_streamer.cpp src/webrtc_server.cpp src/udp_sink_server.cpp)
 

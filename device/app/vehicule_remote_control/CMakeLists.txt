@@ -8,11 +8,11 @@ include_directories (
     "${PROJECT_SOURCE_DIR}/lib/webrtc_server/includes"
     "${PROJECT_SOURCE_DIR}/lib/vehicule/includes"
     "${PROJECT_SOURCE_DIR}/lib/utils/includes"
+    "${PROJECT_SOURCE_DIR}/lib/video_analysis/includes"
 )
 
 add_executable (quintal_control
     main.cpp
-    camera_analysis.cpp
 )
 
 target_include_directories(quintal_control PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
@@ -22,6 +22,7 @@ target_link_libraries(quintal_control PRIVATE
     firmata
     vehicule
     utils
+    video_analysis
     quintal_proto
     webrtc_server
 )

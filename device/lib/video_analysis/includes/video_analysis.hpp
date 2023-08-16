@@ -2,7 +2,7 @@
 
 #include "camera_frame_queue.hpp"
 
-struct CameraAnalysis
+struct VideoAnalysis
 {
 
 public:
