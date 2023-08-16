@@ -123,11 +123,15 @@ void WebRTCServer::startPC(
 
 	pc->onStateChange([id, this, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack](rtc::PeerConnection::State state) {
         std::cout << "State: " << state << std::endl;
-        if (state == rtc::PeerConnection::State::Disconnected ||
-            state == rtc::PeerConnection::State::Failed ||
-            state == rtc::PeerConnection::State::Closed) {
-			pc->close();
-			this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack);
-        }
+        if (state == rtc::PeerConnection::State::Closed) {
+			try {
+				pc->close();
+				this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack);
+			} catch (...) {
+				std::cout << "error ?" << std::endl;
+			}
+		} else {
+			std::cout << "just elsing " << std::endl;
+		}
     });
 }
