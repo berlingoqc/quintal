@@ -164,6 +164,8 @@ int main()
     });
 
     ws.onMessage([&webRtcServer](std::variant<rtc::binary, rtc::string> msg) {
+
+        std::cout << "receive message from websocket " << std::endl;
         if (std::holds_alternative<rtc::string>(msg)) {
              nlohmann::json message =  nlohmann::json::parse(std::get<std::string>(msg));
 

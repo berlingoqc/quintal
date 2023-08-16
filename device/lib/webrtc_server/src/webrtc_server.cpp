@@ -31,6 +31,7 @@ std::shared_ptr<rtc::Track> WebRTCServer::getTrack() {
 }
 
 void WebRTCServer::initConnectionWithPeer(rtc::Description description) {
+	std::cout << "initConnectionWithPeer : " << std::endl;
 	pc->setRemoteDescription(description);
 }
 
