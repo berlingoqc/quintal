@@ -1,5 +1,5 @@
 
-project("video_analysis" VERSION 0.0.1 LANGUAGES CXX)
+project("analysis" VERSION 0.0.1 LANGUAGES CXX)
 
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/includes

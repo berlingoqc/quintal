@@ -2,7 +2,7 @@
 
 #include <gst/gst.h>
 
-#include "camera_frame_queue.hpp"
+#include "../../analysis/includes/video_queue.hpp"
 #include "config.pb.h"
 
 struct CameraStreamer {

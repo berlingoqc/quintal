@@ -2,6 +2,7 @@
 #include "video_analysis.hpp"
 
 
+
 void VideoAnalysis::init(CVFrameQueue* data) {
     cv::CascadeClassifier face_cascade;
 

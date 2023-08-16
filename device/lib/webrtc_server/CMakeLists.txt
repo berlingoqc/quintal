@@ -5,7 +5,8 @@ project("webrtc_server" VERSION 0.0.1 LANGUAGES CXX)
 
 
 include_directories(
-    ${PROJECT_SOURCE_DIR}/lib/video_analysis/includes
+    "${PROJECT_SOURCE_DIR}/lib/analysis/includes"
+    ${PROJECT_SOURCE_DIR}/lib/firmata/includes
     ${CMAKE_CURRENT_SOURCE_DIR}/includes
 )
 
@@ -20,3 +21,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     ${GSTREAMER_LIBRARIES}
     ${OpenCV_LIBS}
 )
+
+target_include_directories(${PROJECT_NAME} PUBLIC includes/)

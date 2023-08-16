@@ -1,6 +1,6 @@
 #pragma once
 
-#include "camera_frame_queue.hpp"
+#include "video_queue.hpp"
 
 struct VideoAnalysis
 {

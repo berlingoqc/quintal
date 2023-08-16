@@ -8,7 +8,7 @@ include_directories (
     "${PROJECT_SOURCE_DIR}/lib/webrtc_server/includes"
     "${PROJECT_SOURCE_DIR}/lib/vehicule/includes"
     "${PROJECT_SOURCE_DIR}/lib/utils/includes"
-    "${PROJECT_SOURCE_DIR}/lib/video_analysis/includes"
+    "${PROJECT_SOURCE_DIR}/lib/analysis/includes"
 )
 
 add_executable (quintal_control
@@ -22,7 +22,7 @@ target_link_libraries(quintal_control PRIVATE
     firmata
     vehicule
     utils
-    video_analysis
+    analysis
     quintal_proto
     webrtc_server
 )

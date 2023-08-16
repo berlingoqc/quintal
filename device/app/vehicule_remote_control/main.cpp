@@ -9,9 +9,11 @@
 #include <boost/thread/thread.hpp>
 #include <boost/format.hpp> 
 
+// ANALYSIS
+#include "video_analysis.hpp"
+
 // WEBRTC_SERVER
 #include "camera_streamer.hpp"
-#include "camera_analysis.hpp"
 #include "udp_sink_server.hpp"
 #include "webrtc_server.hpp"
 
@@ -141,7 +143,7 @@ int main()
     boost::asio::io_service io_service;
     boost::thread_group threadGroup;
 
-    CameraAnalysis cameraAnalysis;
+    VideoAnalysis cameraAnalysis;
 
     // maybe bundle all of those logic together
     rtc::WebSocket ws;
@@ -152,7 +154,7 @@ int main()
     auto reference_queue = cameraStreamer.getQueue();
 
     threadGroup.create_thread([&]() {
-        cameraAnalysis.init(reference_queue);
+        //cameraAnalysis.init(reference_queue);
     });
 
     threadGroup.create_thread([&]() {
