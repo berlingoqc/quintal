@@ -5,8 +5,6 @@ project("webrtc_server" VERSION 0.0.1 LANGUAGES CXX)
 
 
 include_directories(
-    "${PROJECT_SOURCE_DIR}/lib/analysis/includes"
-    ${PROJECT_SOURCE_DIR}/lib/firmata/includes
     ${CMAKE_CURRENT_SOURCE_DIR}/includes
 )
 

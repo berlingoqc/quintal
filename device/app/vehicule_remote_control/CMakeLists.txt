@@ -3,13 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-include_directories (
-    "${PROJECT_SOURCE_DIR}/lib/firmata/includes"
-    "${PROJECT_SOURCE_DIR}/lib/webrtc_server/includes"
-    "${PROJECT_SOURCE_DIR}/lib/vehicule/includes"
-    "${PROJECT_SOURCE_DIR}/lib/utils/includes"
-    "${PROJECT_SOURCE_DIR}/lib/analysis/includes"
-)
+include_directories ()
 
 add_executable (quintal_control
     main.cpp

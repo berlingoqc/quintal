@@ -2,4 +2,5 @@ syntax = "proto3";
 
 enum MsgHeader {
     CONTROL_EVENT = 0;
+    VIDEO_ANALYSIS_FACES = 1;
 }

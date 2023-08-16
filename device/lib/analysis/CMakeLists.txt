@@ -12,4 +12,5 @@ set ( SRC
 # Crée ma target de la librairie
 add_library (${PROJECT_NAME} STATIC ${SRC})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME} PUBLIC utils ${OpenCV_LIBS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/includes)

@@ -4,7 +4,7 @@ include_directories (
     "${PROTOBUF_INCLUDE_DIR}"
 )
 
-SET (PROTO_FILES ../../../proto/control.proto ../../../proto/msg_header.proto ../../../proto/config.proto)
+SET (PROTO_FILES ../../../proto/control.proto ../../../proto/msg_header.proto ../../../proto/config.proto ../../../proto/video_analysis.proto)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 
