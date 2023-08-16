@@ -5,5 +5,6 @@
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as pb_1 from "google-protobuf";
 export enum MsgHeader {
-    CONTROL_EVENT = 0
+    CONTROL_EVENT = 0,
+    VIDEO_ANALYSIS_FACES = 1
 }

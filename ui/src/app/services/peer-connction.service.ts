@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject, of } from 'rxjs';
+import { Message } from 'google-protobuf';
+import { BehaviorSubject, Observable, Subject, filter, map, of } from 'rxjs';
+
+import { MsgHeader } from 'src/app/proto';
+
+
+export interface DCMessage {
+  header: MsgHeader;
+  data: Uint8Array;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +17,12 @@ export class PeerConnctionService {
 
   private pc?: RTCPeerConnection;
   private dc?: RTCDataChannel
+  private subjectDCMessage = new Subject<DCMessage>();
 
   iceStatus = new BehaviorSubject<RTCSessionDescription | null>(null);
   onTrack = new BehaviorSubject<RTCTrackEvent | null>(null);
   connectionStatus = new BehaviorSubject<boolean>(false);
+
 
   get controlDataChannel(): RTCDataChannel | undefined {
     return this.dc;
@@ -35,7 +46,6 @@ export class PeerConnctionService {
 
   start() {
 
-
     if (this.pc) {
       this.pc.close();
     }
@@ -55,22 +65,6 @@ export class PeerConnctionService {
           username: "username1",
           credential: "key1"
         },
-        /*
-        {
-          urls: "turn:a.relay.metered.ca:80",
-          username: "1d5df4140ad2e51e190d2cc4",
-          credential: "BggnkQ7ytzN7zepr",
-        },
-        {
-          urls: "turn:a.relay.metered.ca:443",
-          username: "1d5df4140ad2e51e190d2cc4",
-          credential: "BggnkQ7ytzN7zepr",
-        },@
-        {
-          urls: "turn:a.relay.metered.ca:443?transport=tcp",
-          username: "1d5df4140ad2e51e190d2cc4",
-          credential: "BggnkQ7ytzN7zepr",
-        },*/
       ]
     });
 
@@ -85,8 +79,14 @@ export class PeerConnctionService {
       };
 
       this.dc.onmessage = (evt) => {
-        console.log('EVENT MESSAGE ', evt);
-      }
+
+        if (evt.data instanceof ArrayBuffer) {
+          var int8view = new Uint8Array(evt.data);
+          this.subjectDCMessage.next({header: int8view[0], data: int8view.slice(1)})
+        } else {
+          console.warn("receive data from datachannel is wrong format ", evt);
+        }
+      };
 
       this.dc.onclose = () => {
         console.log('close');
@@ -112,6 +112,13 @@ export class PeerConnctionService {
       this.onTrack.next(evt);
     };
 
+  }
+
+  getDCMessage<T extends Message>(type: MsgHeader,  parse :(bytes: Uint8Array) => T): Observable<T> {
+    return this.subjectDCMessage.asObservable().pipe(
+      filter(x => x.header === type),
+      map(x => parse(x.data))
+    );
   }
 
   async initializeConnection(offer: RTCSessionDescriptionInit) {

@@ -3,12 +3,10 @@
  * compiler version: 4.23.4
  * source: control.proto
  * git: https://github.com/thesayyn/protoc-gen-ts */
-import * as dependency_1 from "./google/protobuf/timestamp";
 import * as pb_1 from "google-protobuf";
 export class ControlEvent extends pb_1.Message {
     #one_of_decls: number[][] = [];
     constructor(data?: any[] | {
-        at?: dependency_1.google.protobuf.Timestamp;
         x?: number;
         y?: number;
         throtle?: number;
@@ -16,9 +14,6 @@ export class ControlEvent extends pb_1.Message {
         super();
         pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
         if (!Array.isArray(data) && typeof data == "object") {
-            if ("at" in data && data.at != undefined) {
-                this.at = data.at;
-            }
             if ("x" in data && data.x != undefined) {
                 this.x = data.x;
             }
@@ -29,15 +24,6 @@ export class ControlEvent extends pb_1.Message {
                 this.throtle = data.throtle;
             }
         }
-    }
-    get at() {
-        return pb_1.Message.getWrapperField(this, dependency_1.google.protobuf.Timestamp, 1) as dependency_1.google.protobuf.Timestamp;
-    }
-    set at(value: dependency_1.google.protobuf.Timestamp) {
-        pb_1.Message.setWrapperField(this, 1, value);
-    }
-    get has_at() {
-        return pb_1.Message.getField(this, 1) != null;
     }
     get x() {
         return pb_1.Message.getFieldWithDefault(this, 2, 0) as number;
@@ -58,15 +44,11 @@ export class ControlEvent extends pb_1.Message {
         pb_1.Message.setField(this, 4, value);
     }
     static fromObject(data: {
-        at?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
         x?: number;
         y?: number;
         throtle?: number;
     }): ControlEvent {
         const message = new ControlEvent({});
-        if (data.at != null) {
-            message.at = dependency_1.google.protobuf.Timestamp.fromObject(data.at);
-        }
         if (data.x != null) {
             message.x = data.x;
         }
@@ -80,14 +62,10 @@ export class ControlEvent extends pb_1.Message {
     }
     toObject() {
         const data: {
-            at?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
             x?: number;
             y?: number;
             throtle?: number;
         } = {};
-        if (this.at != null) {
-            data.at = this.at.toObject();
-        }
         if (this.x != null) {
             data.x = this.x;
         }
@@ -103,8 +81,6 @@ export class ControlEvent extends pb_1.Message {
     serialize(w: pb_1.BinaryWriter): void;
     serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
         const writer = w || new pb_1.BinaryWriter();
-        if (this.has_at)
-            writer.writeMessage(1, this.at, () => this.at.serialize(writer));
         if (this.x != 0)
             writer.writeInt32(2, this.x);
         if (this.y != 0)
@@ -120,9 +96,6 @@ export class ControlEvent extends pb_1.Message {
             if (reader.isEndGroup())
                 break;
             switch (reader.getFieldNumber()) {
-                case 1:
-                    reader.readMessage(message.at, () => message.at = dependency_1.google.protobuf.Timestamp.deserialize(reader));
-                    break;
                 case 2:
                     message.x = reader.readInt32();
                     break;

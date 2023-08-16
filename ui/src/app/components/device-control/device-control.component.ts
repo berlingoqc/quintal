@@ -1,5 +1,6 @@
-import { AfterContentInit, AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { take } from 'rxjs';
+import { AfterContentInit, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subscription, take } from 'rxjs';
+import { FacesRecognitionEvent, MsgHeader } from 'src/app/proto';
 import { ControlChannelService } from 'src/app/services/control-channel.service';
 import { PeerConnctionService } from 'src/app/services/peer-connction.service';
 import { SignalingService } from 'src/app/services/signaling.service';
@@ -9,16 +10,22 @@ import { SignalingService } from 'src/app/services/signaling.service';
   templateUrl: './device-control.component.html',
   styleUrls: ['./device-control.component.scss']
 })
-export class DeviceControlComponent implements AfterViewInit {
+export class DeviceControlComponent implements AfterViewInit, OnDestroy {
   @ViewChild('video') video?: ElementRef<HTMLVideoElement>;
   @ViewChild('canvas') canvas?: ElementRef<HTMLCanvasElement>;
 
+  subAnalysisVideo?: Subscription;
+
+
+  latestEvent?: FacesRecognitionEvent;
+
+  timeout?: any;
 
   constructor(
     public signalingService: SignalingService,
     public peerConnectionService: PeerConnctionService,
     public controlChannelService: ControlChannelService,
-  ) {}
+  ) { }
 
   ngAfterViewInit(): void {
     this.peerConnectionService.onTrack.asObservable().pipe(take(1)).subscribe(evt => {
@@ -30,7 +37,7 @@ export class DeviceControlComponent implements AfterViewInit {
       const ctx = this.canvas?.nativeElement.getContext('2d');
       const sthis = this;
 
-      this.video?.nativeElement.addEventListener('play', function() {
+      this.video?.nativeElement.addEventListener('play', function () {
         if (this.paused || this.ended) {
           return;
         }
@@ -42,23 +49,45 @@ export class DeviceControlComponent implements AfterViewInit {
 
 
         const callback = () => {
-          ctx?.clearRect(0, 0, this.width, this.height);
+          (sthis.canvas?.nativeElement as any).width = sthis.canvas?.nativeElement.width;
+          if (!ctx) return;
 
-          // Draw your 2D shapes. Here's an example rectangle:
-          (ctx as any).fillStyle = 'red';
-          ctx?.fillRect(50, 50, 100, 100);
+          ctx.clearRect(0, 0, this.width, this.height);
 
-          console.log('draw of canvas');
+          ctx.strokeStyle = 'red';
+          ctx.lineWidth = 3;
 
-          // Continue drawing loop
-          requestAnimationFrame(callback);
+          if (sthis.latestEvent) {
+
+            for (const face of sthis.latestEvent.faces) {
+              ctx.clearRect(0, 0, this.width, this.height); // Clear previous drawings
+              ctx.strokeStyle = 'red'; // Set the color of the rectangle
+              ctx.lineWidth = 3; // Set the width of the rectangle borde
+              ctx.strokeRect(face.x, face.y, face.width, face.height);
+            }
+
+            sthis.latestEvent = undefined;
+          }
+
+          clearTimeout(sthis.timeout);
+          sthis.timeout = setTimeout(() => {
+            if (!sthis.latestEvent) {
+              (sthis.canvas?.nativeElement as any).width = sthis.canvas?.nativeElement.width;
+            }
+          }, 500);
         };
 
-        requestAnimationFrame(callback);
-        
+        sthis.subAnalysisVideo = sthis.peerConnectionService.getDCMessage(MsgHeader.VIDEO_ANALYSIS_FACES, FacesRecognitionEvent.deserialize).subscribe((event) => {
+          sthis.latestEvent = event;
+          requestAnimationFrame(callback)
+        });
       });
 
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subAnalysisVideo?.unsubscribe();
   }
 
 

@@ -118,7 +118,6 @@ void WebRTCServer::startPC(
 
 	pc->onDataChannel([&](std::shared_ptr<rtc::DataChannel> _dc) {
 		std::cout << "[Got a DataChannel with label: " << _dc->label() << "]" << std::endl;
-		//dc1 = _dc;
 
 		_dc->onClosed(
 	 	   [&]() { std::cout << "[DataChannel closed: " << _dc->label() << "]" << std::endl; });
