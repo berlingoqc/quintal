@@ -57,6 +57,7 @@ include_directories(
     webrtc_server
     vehicule
     utils
+    video_analysis
     protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite
 	${GSTREAMER_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
