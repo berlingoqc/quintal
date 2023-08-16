@@ -23,11 +23,10 @@ export class DevicesSelectionComponent {
 
 
   async onConnectClick(payload: any) {
+    console.log('SDP');
     const message = await this.peerConnectionService.initializeConnection(payload);
-
+    console.log('OVER');
     this.signalingService.sendSdp(message);
-
-
   }
 
 }

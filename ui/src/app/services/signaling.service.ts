@@ -74,7 +74,8 @@ export class SignalingService {
   }
 
   sendSdp(answer: any) {
-    this.ws?.send(JSON.stringify(answer));
+    (this.ws as any).send(JSON.stringify(answer));
+    console.log('SEND SDP');
   }
 
 }

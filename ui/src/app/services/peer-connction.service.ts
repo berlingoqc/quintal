@@ -48,8 +48,14 @@ export class PeerConnctionService {
       bundlePolicy: 'max-bundle',
       iceServers: [
         {
-          urls: "stun:stun.relay.metered.ca:80",
+          urls: "stun:stun.l.google.com:19302"
         },
+        {
+          urls: "turn:turn.cars.growbe.ca:3478",
+          username: "username1",
+          credential: "key1"
+        },
+        /*
         {
           urls: "turn:a.relay.metered.ca:80",
           username: "1d5df4140ad2e51e190d2cc4",
@@ -59,12 +65,12 @@ export class PeerConnctionService {
           urls: "turn:a.relay.metered.ca:443",
           username: "1d5df4140ad2e51e190d2cc4",
           credential: "BggnkQ7ytzN7zepr",
-        },
+        },@
         {
           urls: "turn:a.relay.metered.ca:443?transport=tcp",
           username: "1d5df4140ad2e51e190d2cc4",
           credential: "BggnkQ7ytzN7zepr",
-        },
+        },*/
       ]
     });
 
@@ -127,10 +133,12 @@ export class PeerConnctionService {
 
   async waitGatheringComplete(): Promise<void> {
     return new Promise((resolve) => {
+      console.log('RECEIVE STATE ', this.pc?.iceGatheringState);
       if (this.pc?.iceGatheringState === 'complete') {
         resolve();
       } else {
         this.pc?.addEventListener('icegatheringstatechange', () => {
+          console.log('RECEIVE STATE CHANGE ', this.pc?.iceGatheringState);
           if (this.pc?.iceGatheringState === 'complete') {
             resolve();
           }
