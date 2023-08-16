@@ -7,5 +7,15 @@ struct VideoAnalysis
 {
 
 public:
-    void init(CVFrameQueue* CVFrameQueue);
+    VideoAnalysis(
+        CVFrameQueue* CVFrameQueue
+    );
+
+    void init();
+
+    void replaceProtobufSender(std::shared_ptr<ProtobufMessageSender> protobufMessageSender);
+
+private:
+    CVFrameQueue* cvFrameQueue_;
+    std::shared_ptr<ProtobufMessageSender> protobufMessageSender_;
 };

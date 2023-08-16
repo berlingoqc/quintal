@@ -143,7 +143,6 @@ int main()
     boost::asio::io_service io_service;
     boost::thread_group threadGroup;
 
-    VideoAnalysis cameraAnalysis;
 
     // maybe bundle all of those logic together
     rtc::WebSocket ws;
@@ -153,8 +152,10 @@ int main()
 
     auto reference_queue = cameraStreamer.getQueue();
 
+    VideoAnalysis cameraAnalysis(reference_queue);
+
     threadGroup.create_thread([&]() {
-        //cameraAnalysis.init(reference_queue);
+        cameraAnalysis.init();
     });
 
     threadGroup.create_thread([&]() {
@@ -252,11 +253,22 @@ int main()
         return;
     };
 
+    boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callback_sender = [&server, &cameraAnalysis](std::shared_ptr<ProtobufMessageSender> track) {
+        std::cout << "receive protobuf sender" << std::endl;
+
+        cameraAnalysis.replaceProtobufSender(track);
+
+        return;
+    };
+
+
+
     webRtcServer.init(
         config.id(), config.web_rtc(),
         config.video_stream(),
         callback, callback_datachannel,
-        callback_track
+        callback_track,
+        callback_sender
     );
 
     io_service.run();

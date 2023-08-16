@@ -10,7 +10,9 @@ set ( SRC src/file_manager.cpp )
 add_library(${PROJECT_NAME} STATIC ${SRC})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+	${PROTOBUF_LIBRARY}
 	Boost::filesystem
+	quintal_proto
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/includes)

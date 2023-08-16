@@ -19,15 +19,20 @@ void WebRTCServer::init(
 	const VideoStreamConfig& videoStreamingConfig,
 	boost::function<void(json)>callback,
 	boost::function<void(rtc::binary)>callback_datachannel,
-	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
+	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack,
+	boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
 ) {
 	rtc::InitLogger(rtc::LogLevel::Debug);
 
-	this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack);
+	this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack, callbackSenderReader);
 }
 
 std::shared_ptr<rtc::Track> WebRTCServer::getTrack() {
 	return this->track;
+}
+
+std::shared_ptr<ProtobufMessageSender> WebRTCServer::getDCSender() {
+	return this->dcProtobufSender;
 }
 
 void WebRTCServer::initConnectionWithPeer(rtc::Description description) {
@@ -49,7 +54,8 @@ void WebRTCServer::startPC(
 	const VideoStreamConfig& videoStreamingConfig,
 	boost::function<void(json)>callback,
 	boost::function<void(rtc::binary)>callback_datachannel,
-	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack
+	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack,
+	boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
 ) {
 
 	rtc::Configuration config;
@@ -104,6 +110,10 @@ void WebRTCServer::startPC(
 
 	this->dc = dc;
 
+	this->dcProtobufSender = std::make_shared<DCProtobufSender>(dc);
+
+	callbackSenderReader(this->dcProtobufSender);
+
 	pc->setLocalDescription();
 
 	pc->onDataChannel([&](std::shared_ptr<rtc::DataChannel> _dc) {
@@ -121,12 +131,12 @@ void WebRTCServer::startPC(
 			});
 	});
 
-	pc->onStateChange([id, this, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack](rtc::PeerConnection::State state) {
+	pc->onStateChange([id, this, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack, callbackSenderReader](rtc::PeerConnection::State state) {
         std::cout << "State: " << state << std::endl;
         if (state == rtc::PeerConnection::State::Closed) {
 			try {
 				pc->close();
-				this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack);
+				this->startPC(id, webRtcConfig, videoStreamingConfig, callback, callback_datachannel, callbackTrack, callbackSenderReader);
 			} catch (...) {
 				std::cout << "error ?" << std::endl;
 			}

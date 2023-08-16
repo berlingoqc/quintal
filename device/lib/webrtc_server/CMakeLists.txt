@@ -8,13 +8,18 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/includes
 )
 
-set ( SRC src/camera_streamer.cpp src/webrtc_server.cpp src/udp_sink_server.cpp)
+set ( SRC 
+    src/camera_streamer.cpp
+    src/webrtc_server.cpp
+    src/udp_sink_server.cpp
+    src/dc_protobuf_sender.cpp
+)
 
 add_library(${PROJECT_NAME} STATIC ${SRC})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
+    utils
 	${LINK_THREAD}
-	
     ${LIBDATACHANNEL_LIBRARIES}
     ${GSTREAMER_LIBRARIES}
     ${OpenCV_LIBS}
