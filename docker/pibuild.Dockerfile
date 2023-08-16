@@ -39,7 +39,6 @@ RUN git clone https://github.com/Microsoft/vcpkg.git && ./vcpkg/bootstrap-vcpkg.
 
 RUN ./vcpkg/vcpkg install protobuf
 
-#RUN apt-get -yq install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
-#RUN dpkg --add-architecture armhf
-#RUN apt-get install libssl-dev:armhf libboost-dev:armhf libasio-dev:armhf libboost-system-dev:armhf libboost-filesystem-dev:armhf libboost-thread-dev:armhf libgstreamer1.0-dev:armhf 
+RUN cd libdatachannel && \
+	mkdir -p build && cd build && cmake .. -DUSE_GNUTLS=0 -DUSE_NICE=0 -DCMAKE_BUILD_TYPE=Release && make && make install
 

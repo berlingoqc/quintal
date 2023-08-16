@@ -61,7 +61,7 @@ include_directories(
 	${GSTREAMER_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
 
-	${PROJECT_SOURCE_DIR}/build/lib/quintal_proto
+	"${CMAKE_CURRENT_BINARY_DIR}/lib/quintal_proto"
     "${PROTOBUF_INCLUDE_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}"
 )

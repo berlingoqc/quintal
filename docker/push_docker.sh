@@ -1,3 +1,3 @@
 #! /bin/bash
 
-docker push -t ghcr.io/berlingoqc/quintal/crossbuild
+docker push ghcr.io/berlingoqc/quintal/crossbuild
