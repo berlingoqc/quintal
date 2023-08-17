@@ -5,8 +5,8 @@
 #include "msg_header.pb.h"
 
 #include <google/protobuf/message.h>
-#include "pb_common.h"
-#include "pb_encode.h"
+//#include "pb_common.h"
+//#include "pb_encode.h"
 
 class ProtobufMessageSender {
 

@@ -10,7 +10,7 @@
 #include <boost/format.hpp> 
 
 // ANALYSIS
-#include "video_analysis.hpp"
+//#include "video_analysis.hpp"
 
 // WEBRTC_SERVER
 #include "camera_streamer.hpp"
@@ -152,7 +152,7 @@ int main()
 
     auto reference_queue = cameraStreamer.getQueue();
 
-    VideoAnalysis cameraAnalysis(reference_queue);
+    //VideoAnalysis cameraAnalysis(reference_queue);
 
     //threadGroup.create_thread([&]() {
     //    cameraAnalysis.init();
@@ -253,10 +253,10 @@ int main()
         return;
     };
 
-    boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callback_sender = [&server, &cameraAnalysis](std::shared_ptr<ProtobufMessageSender> track) {
+    boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callback_sender = [&server](std::shared_ptr<ProtobufMessageSender> track) {
         std::cout << "receive protobuf sender" << std::endl;
 
-        cameraAnalysis.replaceProtobufSender(track);
+        //cameraAnalysis.replaceProtobufSender(track);
 
         return;
     };
