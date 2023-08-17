@@ -1,7 +1,7 @@
 #pragma once
 
 #include <firmata_client.hpp>
-
+#include <map>
 #include <cstdint>
 
 class IotControl {
@@ -25,4 +25,6 @@ public:
 
 private:
 	FirmataClient firmataClient_;
+
+	int32_t pinValue_[100] = {-1};
 };

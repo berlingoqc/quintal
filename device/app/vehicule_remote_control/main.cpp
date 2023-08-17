@@ -154,9 +154,9 @@ int main()
 
     VideoAnalysis cameraAnalysis(reference_queue);
 
-    threadGroup.create_thread([&]() {
-        cameraAnalysis.init();
-    });
+    //threadGroup.create_thread([&]() {
+    //    cameraAnalysis.init();
+    //});
 
     threadGroup.create_thread([&]() {
         cameraStreamer.init(config.video_stream());
@@ -230,7 +230,7 @@ int main()
                         if (controlEvent.x() > 0) {
                             car->steerLeft(255);
                         } else if (controlEvent.x() < 0) {
-                            car->steerLeft(255);
+                            car->steerRight(255);
                         } else {
                             car->stopSteer();
                         }

@@ -44,8 +44,6 @@ public:
             static_cast<unsigned char>((value >> 7) & 0x7F)   // This gets the upper 7 bits
         };
 
-        std::cout << "pwm " << pin << " " << value << std::endl;
-
         boost::asio::write(serial, boost::asio::buffer(msg, 3));
 
     }
