@@ -53,6 +53,8 @@ export class ControlChannelService {
 
         this.sendMsg(MsgHeader.CONTROL_EVENT, controlEvent);
 
+        this.keystate.hasChange = false;
+
     }
 
     private onKeyDown(event: KeyboardEvent) {
@@ -61,20 +63,28 @@ export class ControlChannelService {
         // Check which key was pressed
         switch (keyCode) {
             case 87: // W key
-                this.keystate.front = true;
-                this.keystate.hasChange = true;
+                if (this.keystate.front != true) {
+                    this.keystate.front = true;
+                    this.keystate.hasChange = true;
+                }
                 break;
             case 65: // A key
-                this.keystate.left = true;
-                this.keystate.hasChange = true;
+                if (this.keystate.left != true) {
+                    this.keystate.left = true;
+                    this.keystate.hasChange = true;
+                }
                 break;
             case 83: // S key
-                this.keystate.back = true;
-                this.keystate.hasChange = true;
+                if (this.keystate.back != true) {
+                    this.keystate.back = true;
+                    this.keystate.hasChange = true;
+                }
                 break;
             case 68: // D key
-                this.keystate.right = true;
-                this.keystate.hasChange = true;
+                if (this.keystate.right != true) {
+                    this.keystate.right = true;
+                    this.keystate.hasChange = true;
+                }
                 break;
             default:
                 // Ignore other keys
@@ -90,20 +100,28 @@ export class ControlChannelService {
         // Check which key was released
         switch (keyCode) {
             case 87: // W key
-                this.keystate.front = false;
-                this.keystate.hasChange = true;
+                if (this.keystate.front != false) {
+                    this.keystate.front = false;
+                    this.keystate.hasChange = true;
+                }
                 break;
             case 65: // A key
-                this.keystate.left = false;
-                this.keystate.hasChange = true;
+                if (this.keystate.left != false) {
+                    this.keystate.left = false;
+                    this.keystate.hasChange = true;
+                }
                 break;
             case 83: // S key
-                this.keystate.back = false;
-                this.keystate.hasChange = true;
+                if (this.keystate.back != false) {
+                    this.keystate.back = false;
+                    this.keystate.hasChange = true;
+                }
                 break;
             case 68: // D key
-                this.keystate.right = false;
-                this.keystate.hasChange = true;
+                if (this.keystate.right != false) {
+                    this.keystate.right = false;
+                    this.keystate.hasChange = true;
+                }
                 break;
             default:
                 // Ignore other keys
