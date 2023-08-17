@@ -103,8 +103,8 @@ void CameraStreamer::init(
         return;
     }
 
-    //sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
-    //g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), &callbackData);
+    sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
+    g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), &callbackData);
 
 
 /*
