@@ -3,7 +3,7 @@
 mkdir -p device/build_aarch64
 
 cd device/build_aarch64 && \
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../../../vcpkg/scripts/buildsystems/vcpkg.cmake && \
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../../../vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release && \
 make quintal_proto quintal_control
 
 mkdir -p bundle
