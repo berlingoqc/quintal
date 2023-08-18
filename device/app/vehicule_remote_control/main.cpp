@@ -143,7 +143,6 @@ int main()
     boost::asio::io_service io_service;
     boost::thread_group threadGroup;
 
-
     // maybe bundle all of those logic together
     rtc::WebSocket ws;
     CameraStreamer cameraStreamer;
@@ -270,6 +269,7 @@ int main()
         callback_track,
         callback_sender
     );
+
 
     io_service.run();
 }

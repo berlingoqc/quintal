@@ -103,14 +103,9 @@ void CameraStreamer::init(
         return;
     }
 
-    //sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
-    //g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), &callbackData);
+    sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
+    g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), &callbackData);
 
-
-/*
-    sinkH264 = gst_bin_get_by_name(GST_BIN(pipeline), "h264sink");
-    g_signal_connect (sinkH264, "new-sample", G_CALLBACK(new_sample_2), track.get());
-    */
 
     ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE) {
@@ -119,8 +114,19 @@ void CameraStreamer::init(
 		return;
     }
 
+
     std::cout << "starting streaming pipeline" << std::endl;
 
+    // Main loop (optional, if you need one)
+    GMainLoop *loop = g_main_loop_new(nullptr, FALSE);
+    g_main_loop_run(loop);
+
+    // Clean up
+    gst_element_set_state(pipeline, GST_STATE_NULL);
+    gst_object_unref(pipeline);
+    g_main_loop_unref(loop);
+    
+    /*
 	bus = gst_element_get_bus (pipeline);
     msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, static_cast<GstMessageType>(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
 
@@ -130,6 +136,7 @@ void CameraStreamer::init(
     gst_object_unref (bus);
     gst_element_set_state (pipeline, GST_STATE_NULL);
     gst_object_unref (pipeline);
+    */
 
 	return;
 }

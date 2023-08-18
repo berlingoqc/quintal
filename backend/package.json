@@ -2,9 +2,11 @@
   "scripts": {
     "docker:build": "docker build -t ghcr.io/berlingoqc/quintal/signaling-server:latest .",
     "docker:push": "docker push ghcr.io/berlingoqc/quintal/signaling-server:latest",
+    "generate:token": "node ./generate_token.js",
     "build": ""
   },
   "dependencies": {
+    "jsonwebtoken": "^9.0.1",
     "websocket": "^1.0.34"
   }
 }

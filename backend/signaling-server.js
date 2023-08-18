@@ -1,24 +1,12 @@
-/*
- * libdatachannel example web server
- * Copyright (C) 2020 Lara Mackey
- * Copyright (C) 2020 Paul-Louis Ageneau
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; If not, see <http://www.gnu.org/licenses/>.
- */
 
 const http = require('http');
 const websocket = require('websocket');
+
+const jwt = require('jsonwebtoken');
+
+const ENV_TOKEN_KEY = "TOKEN";
+
+const SECRET_KEY = process.env[ENV_TOKEN_KEY];
 
 const httpServer = http.createServer((req, res) => {
   console.log(`${req.method.toUpperCase()} ${req.url}`);
@@ -34,44 +22,48 @@ const httpServer = http.createServer((req, res) => {
   respond(404, 'Not Found');
 });
 
-/**
- * How will it work ???
- * 
- * ok the signaling server map all devices with client (s)
- * 
- * when a device is running it's automatically connected to the websocket
- * sending it's connection information
- * 
- * the client can query the list of device connected
- * 
- * when it want to open a connection it send it's connection information
- * for it to initialize the connection
- */
 
 const wsServer = new websocket.server({httpServer});
 
 const devices_path = "devices";
 const clients_path = "clients";
 
-const mapClients = {};
-const mapDevices = {};
+const mapUser = {}
 
 wsServer.on('request', (req) => {
   console.log(`WS  ${req.resource}`);
 
-  const {path} = req.resourceURL;
+  const {query} = req.resourceURL;
 
+  let token = undefined;
 
-  const splitted = path.split('/');
-  splitted.shift();
-  const type = splitted[0];
-  const id = splitted[1];
-
-  if (type !== devices_path && type !== clients_path) {
-      return;
+  if (req.httpRequest.headers.authorization) {
+    token = req.httpRequest.headers.authorization.split(' ').pop()
+  } else if (query.token) {
+    token = query.token
   }
 
+  if (!token) {
+    return;
+  }
+
+  // parse token
+
+  
+
+
+  console.log('auth token = ' + token);
+
   const conn = req.accept(null, req.origin);
+
+  if (!mapUser[token]) {
+    mapUser[token] = {
+      mapClients: {},
+      mapDevices: {}
+    }
+  }
+
+  let { mapClients, mapDevices } = mapUser[token];
 
   if (type === clients_path) {
     conn.send(JSON.stringify(Object.values(mapDevices).map(x => x.message)));
@@ -128,4 +120,4 @@ const port = splitted.pop();
 const hostname = splitted.join(':') || '0.0.0.0';
 
 httpServer.listen(port, hostname,
-                  () => { console.log(`Server listening on ${hostname}:${port}`); });
+  () => { console.log(`Server listening on ${hostname}:${port}`); });
