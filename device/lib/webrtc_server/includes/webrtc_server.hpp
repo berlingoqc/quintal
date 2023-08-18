@@ -3,9 +3,6 @@
 #include <memory>
 #include <optional>
 
-#include <boost/thread/thread.hpp>
-#include <boost/function.hpp>
-
 #include <nlohmann/json.hpp>
 
 #include <rtc/rtc.hpp>
