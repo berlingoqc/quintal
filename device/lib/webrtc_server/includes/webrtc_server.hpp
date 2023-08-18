@@ -25,10 +25,10 @@ public:
 		const std::string& id,
 		const WebRTCConfig& webRtcConfig,
 		const VideoStreamConfig& videoStreamingConfig,
-		boost::function<void(nlohmann::json)> callbackGathering,
-		boost::function<void(rtc::binary)> callbackDatachannel,
-		boost::function<void(std::shared_ptr<rtc::Track>)> callbackTrack,
-		boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
+		std::function<void(nlohmann::json)> callbackGathering,
+		std::function<void(rtc::binary)> callbackDatachannel,
+		std::function<void(std::shared_ptr<rtc::Track>)> callbackTrack,
+		std::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
 	);
 
 	void initConnectionWithPeer(rtc::Description description);
@@ -54,9 +54,9 @@ private:
 		const std::string& id,
 		const WebRTCConfig& webRtcConfig,
 		const VideoStreamConfig& videoStreamingConfig,
-		boost::function<void(nlohmann::json)>callback,
-		boost::function<void(rtc::binary)>callback_datachannel,
-		boost::function<void(std::shared_ptr<rtc::Track>)> callbackTrack,
-		boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
+		std::function<void(nlohmann::json)>callback,
+		std::function<void(rtc::binary)>callback_datachannel,
+		std::function<void(std::shared_ptr<rtc::Track>)> callbackTrack,
+		std::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
 	);
 };

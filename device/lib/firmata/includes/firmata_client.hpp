@@ -1,10 +1,8 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <iostream>
 #include <vector>
-
-namespace asio = boost::asio;
 
 #define FIRMATA_LSB(x)					((x) & 0x7F)
 #define FIRMATA_MSB(x)					(((x) >> 7) & 0x7F)
@@ -44,7 +42,7 @@ public:
             static_cast<unsigned char>((value >> 7) & 0x7F)   // This gets the upper 7 bits
         };
 
-        boost::asio::write(serial, boost::asio::buffer(msg, 3));
+        asio::write(serial, asio::buffer(msg, 3));
 
     }
 

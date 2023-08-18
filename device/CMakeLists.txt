@@ -22,7 +22,6 @@ find_package(Protobuf REQUIRED)
 find_package(Protobuf CONFIG REQUIRED)
 
 if (APPLE)
-    find_package(Boost REQUIRED COMPONENTS system thread filesystem)
     find_library(GSTREAMER_LIBRARIES
         NAMES GStreamer
         PATHS /Library/Frameworks/GStreamer.framework
@@ -38,14 +37,11 @@ if (APPLE)
 
     link_directories(${GSTREAMER_LIBRARIES}/Libraries)
 
-	set(LINK_THREAD Boost::thread)
-
 else()
-    find_package(Boost REQUIRED COMPONENTS system filesystem)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 
-	set(LINK_THREAD pthread rt boost_thread)
+	set(LINK_THREAD pthread rt)
 endif()
 
 SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})

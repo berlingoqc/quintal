@@ -1,5 +1,5 @@
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <iostream>
 #include <vector>
 
@@ -7,8 +7,6 @@
 #include <unistd.h>
 
 #include <firmata_client.hpp>
-
-namespace asio = boost::asio;
 
 void enableRawMode() {
     struct termios term;

@@ -11,7 +11,6 @@ add_library(${PROJECT_NAME} STATIC ${SRC})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
 	${PROTOBUF_LIBRARY}
-	Boost::filesystem
 	quintal_proto
 )
 

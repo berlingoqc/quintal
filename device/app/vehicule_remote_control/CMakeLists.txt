@@ -13,6 +13,7 @@ target_include_directories(quintal_control PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(quintal_control PRIVATE
     ${PROTOBUF_LIBRARY}
+    ${LINK_THREAD}
     firmata
     vehicule
     utils

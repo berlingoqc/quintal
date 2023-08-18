@@ -1,7 +1,5 @@
 #include "camera_streamer.hpp"
 
-#include <boost/format.hpp>
-
 struct SampleCallbackData {
 
 public:
@@ -41,43 +39,6 @@ static GstFlowReturn new_sample (GstElement *sink, SampleCallbackData* data) {
     return GST_FLOW_ERROR;
 }
 
-/*
-const rtc::SSRC ssrc = 42;
-static GstFlowReturn new_sample_2 (GstElement *sink, rtc::Track* track) {
-    GstSample *sample;
-
-
-    g_signal_emit_by_name (sink, "pull-sample", &sample);
-    if (sample) {
-        // Do something with the sample
-		GstBuffer *buffer = gst_sample_get_buffer(sample);
-  		GstMapInfo map;
-
-  		gst_buffer_map(buffer, &map, GST_MAP_READ);
-        gsize size = gst_buffer_get_size(buffer);
-
-		auto rtp = reinterpret_cast<rtc::RtpHeader *>(buffer);
-        rtp->setSsrc(ssrc);
-
-        //std::cout << size << std::endl;
-
-        if (track->isOpen()) {
-            GstBuffer *copy_buffer = gst_buffer_copy(buffer);
-			auto buff = reinterpret_cast<const std::byte *>(copy_buffer);
-
-            track->send(buff, size);
-            
-        }
-
-  		gst_buffer_unmap(buffer, &map);
-        gst_sample_unref (sample);
-        return GST_FLOW_OK;
-    }
-
-    return GST_FLOW_ERROR;
-}
-*/
-
 void CameraStreamer::init(
     const VideoStreamConfig& streamConfig
 ) {
@@ -89,13 +50,14 @@ void CameraStreamer::init(
 
     std::string source_camera = streamConfig.gstreamer_source();
 
-    std::string gstreamer_pipeline = source_camera + 
-        (boost::format(" ! videoconvert ! video/x-raw,width=%1%,height=%2%,format=%3% ! tee name=t ") % streamConfig.width() % streamConfig.height() % streamConfig.format()).str() +
-        (boost::format("t. ! queue ! videoconvert ! x264enc tune=%1% bitrate=%2% key-int-max=%3% ! video/x-h264, profile=%4% ! rtph264pay pt=%5% mtu=%6% ! udpsink host=%7% port=%8% ") %
-            streamConfig.h264_enc_tune() % streamConfig.bitrate() % streamConfig.keyintmax() % streamConfig.h264_profile() % streamConfig.h264_codec() % streamConfig.mtu() % streamConfig.udp_host() % streamConfig.udp_port()).str() +
-        (boost::format("t. ! queue ! appsink name=appsink emit-signals=true ")).str();
+    std::stringstream ss;
 
-    pipeline = gst_parse_launch(gstreamer_pipeline.c_str(), &error);
+    ss << source_camera << " ! videoconvert ! video/x-raw,width=" << streamConfig.width() << ",height=" << streamConfig.height() << ",format=" << streamConfig.format() << " ! tee name=t ";
+    ss << "t. ! queue ! videoconvert ! x264enc tune= " << streamConfig.h264_enc_tune() << " bitrate=" << streamConfig.bitrate() << " key-int-max=" << streamConfig.keyintmax();
+    ss << " ! video/x-h264, profile=" << streamConfig.h264_profile() << " ! rtph264pay pt=" << streamConfig.h264_codec() << " mtu=" << streamConfig.mtu() << " ! udpsink host=" << streamConfig.udp_host() << " port=" << streamConfig.udp_port()<< " ";
+    ss << " t. ! queue ! appsink name=appsink emit-signals=true ";
+
+    pipeline = gst_parse_launch(ss.str().c_str(), &error);
 
     if (error != NULL) {
         g_printerr("Could not construct pipeline: %s\n", error->message);
@@ -126,7 +88,6 @@ void CameraStreamer::init(
     //gst_object_unref(pipeline);
     //g_main_loop_unref(loop);
 
-    /*
 	bus = gst_element_get_bus (pipeline);
     msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, static_cast<GstMessageType>(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
 
@@ -136,7 +97,6 @@ void CameraStreamer::init(
     gst_object_unref (bus);
     gst_element_set_state (pipeline, GST_STATE_NULL);
     gst_object_unref (pipeline);
-    */
 
 	return;
 }

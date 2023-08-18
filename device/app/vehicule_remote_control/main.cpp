@@ -1,13 +1,11 @@
 // STD
 #include <iostream>
 #include <map>
+#include <thread>
 //#include <format>
 
-// BOOST
-#include <boost/asio.hpp>
-#include <boost/function.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/format.hpp> 
+// ASIO
+#include <asio.hpp>
 
 // ANALYSIS
 //#include "video_analysis.hpp"
@@ -125,6 +123,10 @@ void loadConfig(const char* path, Config* config) {
 
 }
 
+void cameraStreamThread(std::shared_ptr<CameraStreamer> cameraStreamer, VideoStreamConfig videoStreamConfig) {
+    cameraStreamer->init(videoStreamConfig);
+}
+
 int main()
 {
 
@@ -140,16 +142,17 @@ int main()
     
     auto car = carBuilder.buildCar(config.car());
 
-    boost::asio::io_service io_service;
-    boost::thread_group threadGroup;
+    asio::io_service io_service;
+
+    std::vector<std::thread> threads;
 
     // maybe bundle all of those logic together
     rtc::WebSocket ws;
-    CameraStreamer cameraStreamer;
+    auto cameraStreamer = std::make_shared<CameraStreamer>();
     WebRTCServer webRtcServer;
     UDPSinkServer server(io_service, config.video_stream().udp_port()); 
 
-    auto reference_queue = cameraStreamer.getQueue();
+    auto reference_queue = cameraStreamer->getQueue();
 
     //VideoAnalysis cameraAnalysis(reference_queue);
 
@@ -157,9 +160,13 @@ int main()
     //    cameraAnalysis.init();
     //});
 
-    threadGroup.create_thread([&]() {
-        cameraStreamer.init(config.video_stream());
-    });
+    auto threadCameraStream = std::thread(cameraStreamThread, cameraStreamer, config.video_stream());
+
+    //threadCameraStream.detach();
+
+        //std::thread([]() {
+            //cameraStreamer.init(config.video_stream());
+        //});
 
     ws.onOpen([]() {
         std::cout << "WebSocket open" << std::endl;
@@ -192,12 +199,14 @@ int main()
         }
     });
 
-    ws.open(
-        (boost::format("%1%/devices/%2%") %  config.signaling_config().url() % config.id()).str()
-    );
+    std::stringstream ss;
+
+    ss << config.signaling_config().url() << "/devices/" << config.id();
+
+    ws.open(ss.str());
     
 
-    boost::function<void(nlohmann::json)> callback = [&ws](nlohmann::json message) {
+    std::function<void(nlohmann::json)> callback = [&ws](nlohmann::json message) {
 
         std::cout << "sending payload " << std::endl;
         ws.send(message.dump());
@@ -205,7 +214,7 @@ int main()
         return;
     };
 
-    boost::function<void(rtc::binary)> callback_datachannel = [&car](rtc::binary message) {
+    std::function<void(rtc::binary)> callback_datachannel = [&car](rtc::binary message) {
 
         auto header = static_cast<MsgHeader>(message.at(0));
 
@@ -246,20 +255,19 @@ int main()
         return;
     };
 
-    boost::function<void(std::shared_ptr<rtc::Track>)> callback_track = [&server](std::shared_ptr<rtc::Track> track) {
+    std::function<void(std::shared_ptr<rtc::Track>)> callback_track = [&server](std::shared_ptr<rtc::Track> track) {
         std::cout << "receive track" << std::endl;
         server.replaceTrack(track);
         return;
     };
 
-    boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callback_sender = [&server](std::shared_ptr<ProtobufMessageSender> track) {
+    std::function<void(std::shared_ptr<ProtobufMessageSender>)> callback_sender = [&server](std::shared_ptr<ProtobufMessageSender> track) {
         std::cout << "receive protobuf sender" << std::endl;
 
         //cameraAnalysis.replaceProtobufSender(track);
 
         return;
     };
-
 
 
     webRtcServer.init(
@@ -269,7 +277,6 @@ int main()
         callback_track,
         callback_sender
     );
-
 
     io_service.run();
 }

@@ -17,10 +17,10 @@ void WebRTCServer::init(
 	const std::string& id,
 	const WebRTCConfig& webRtcConfig,
 	const VideoStreamConfig& videoStreamingConfig,
-	boost::function<void(json)>callback,
-	boost::function<void(rtc::binary)>callback_datachannel,
-	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack,
-	boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
+	std::function<void(json)>callback,
+	std::function<void(rtc::binary)>callback_datachannel,
+	std::function<void(std::shared_ptr<rtc::Track>)>callbackTrack,
+	std::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
 ) {
 	rtc::InitLogger(rtc::LogLevel::Debug);
 
@@ -52,10 +52,10 @@ void WebRTCServer::startPC(
 	const std::string& id,
 	const WebRTCConfig& webRtcConfig,
 	const VideoStreamConfig& videoStreamingConfig,
-	boost::function<void(json)>callback,
-	boost::function<void(rtc::binary)>callback_datachannel,
-	boost::function<void(std::shared_ptr<rtc::Track>)>callbackTrack,
-	boost::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
+	std::function<void(json)>callback,
+	std::function<void(rtc::binary)>callback_datachannel,
+	std::function<void(std::shared_ptr<rtc::Track>)>callbackTrack,
+	std::function<void(std::shared_ptr<ProtobufMessageSender>)> callbackSenderReader
 ) {
 
 	rtc::Configuration config;

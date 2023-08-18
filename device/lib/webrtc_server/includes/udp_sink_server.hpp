@@ -7,14 +7,14 @@
 #include <rtc/rtc.hpp>
 
 
-using boost::asio::ip::udp;
+using asio::ip::udp;
 
 const int BUFFER_SIZE = 2048;
 
 
 class UDPSinkServer {
 public:
-    UDPSinkServer(boost::asio::io_service& io_service, short port)
+    UDPSinkServer(asio::io_service& io_service, short port)
         : socket_(io_service, udp::endpoint(udp::v4(), port)), track_(nullptr) {
         startReceive();
     }
@@ -30,13 +30,13 @@ public:
 private:
     void startReceive() {
         socket_.async_receive_from(
-            boost::asio::buffer(recv_buffer_), remote_endpoint_,
-            [this](boost::system::error_code ec, std::size_t bytes_transferred) {
+            asio::buffer(recv_buffer_), remote_endpoint_,
+            [this](asio::error_code ec, std::size_t bytes_transferred) {
                 handleReceive(ec, bytes_transferred);
             });
     }
 
-    void handleReceive(const boost::system::error_code& error, std::size_t bytes_transferred) {
+    void handleReceive(const asio::error_code& error, std::size_t bytes_transferred) {
         if (!error) {
             if (bytes_transferred < sizeof(rtc::RtpHeader)) {
                 std::cout << "to short" << std::endl;
@@ -67,5 +67,5 @@ private:
     std::shared_ptr<rtc::Track> track_;
     udp::socket socket_;
     udp::endpoint remote_endpoint_;
-    boost::array<char, BUFFER_SIZE> recv_buffer_;
+    std::array<char, BUFFER_SIZE> recv_buffer_;
 };

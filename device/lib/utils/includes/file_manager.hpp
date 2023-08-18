@@ -3,13 +3,13 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 class FileManager {
 public:
     static std::string loadFile(const std::string& path) {
-        boost::filesystem::path filePath(path);
-        if (!boost::filesystem::exists(filePath) || !boost::filesystem::is_regular_file(filePath)) {
+        std::filesystem::path filePath(path);
+        if (!std::filesystem::exists(filePath) || !std::filesystem::is_regular_file(filePath)) {
             throw std::runtime_error("File not found or not a regular file.");
         }
 
