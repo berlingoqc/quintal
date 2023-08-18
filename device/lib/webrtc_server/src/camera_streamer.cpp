@@ -118,14 +118,14 @@ void CameraStreamer::init(
     std::cout << "starting streaming pipeline" << std::endl;
 
     // Main loop (optional, if you need one)
-    GMainLoop *loop = g_main_loop_new(nullptr, FALSE);
-    g_main_loop_run(loop);
+    //GMainLoop *loop = g_main_loop_new(nullptr, FALSE);
+    //g_main_loop_run(loop);
 
     // Clean up
-    gst_element_set_state(pipeline, GST_STATE_NULL);
-    gst_object_unref(pipeline);
-    g_main_loop_unref(loop);
-    
+    //gst_element_set_state(pipeline, GST_STATE_NULL);
+    //gst_object_unref(pipeline);
+    //g_main_loop_unref(loop);
+
     /*
 	bus = gst_element_get_bus (pipeline);
     msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE, static_cast<GstMessageType>(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
