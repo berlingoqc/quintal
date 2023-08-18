@@ -2,7 +2,9 @@
 #include "iot_control.hpp"
 
 
-FirmataIotControl::FirmataIotControl(const std::string& port) : firmataClient_(port) {}
+FirmataIotControl::FirmataIotControl(const std::string& port) : firmataClient_(port) {
+        this->firmataClient_.getFirmwareInfo();
+}
 
 void FirmataIotControl::setPinMode(int32_t pin, int32_t mode) {
 	if (this->pinValue_[pin] != mode) {
