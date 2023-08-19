@@ -1,44 +1,36 @@
-FROM ubuntu:20.04
+FROM debian:bullseye-slim
 
 LABEL org.opencontainers.image.source https://github.com/berlingoqc/quintal/pibuild
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ="America/New_York"
+ENV MBED_TLS_VERSION=3.0.0
 
 WORKDIR /usr/src/app
 
 RUN  apt update -yq && apt upgrade -yq
 
-RUN apt install -yq  gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross
+RUN apt install -yq build-essential \
+	curl rsync openssh-client libdbus-1-dev pkg-config \
+    protobuf-compiler libprotobuf-dev \
+	libssl-dev \
+	libdbus-1-dev \
+	libasio-dev \
+	libgstreamer1.0-dev \
+	nlohmann-json3-dev \
+	libopencv-dev \
+	git curl zip unzip tar \
+	ninja-build cmake
 
-RUN DEBIAN_FRONTEND="noninteractive"  TZ="America/New_York" apt install -yq curl rsync openssh-client libdbus-1-dev pkg-config
-RUN apt install -yq protobuf-compiler
-RUN apt install -yq libssl-dev
-RUN apt install -yq libdbus-1-dev
+#RUN curl -L https://github.com/Kitware/CMake/releases/download/v3.27.2/cmake-3.27.2.tar.gz --output cmake-3.27.2.tar.gz && tar zxvf cmake-3.27.2.tar.gz && cd cmake-3.27.2 && ./bootstrap && make && make install
+#ENV VCPKG_FORCE_SYSTEM_BINARIES 1
+#RUN git clone https://github.com/Microsoft/vcpkg.git && ./vcpkg/bootstrap-vcpkg.sh
+#RUN ./vcpkg/vcpkg install protobuf
 
-RUN apt install -yq gcc g++
-RUN apt install -yq libboost-dev libasio-dev libboost-system-dev libboost-filesystem-dev libboost-thread-dev
-RUN apt install -yq libgstreamer1.0-dev 
-RUN apt-get install -yq nlohmann-json3-dev
+#ENV MBED_TLS_VERSION=3.4.1
+#RUN curl --location https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/v${MBED_TLS_VERSION}.zip --output output.zip && \
+#	unzip output.zip && cd mbedtls-${MBED_TLS_VERSION} && make && make install
 
-RUN curl -L https://github.com/Kitware/CMake/releases/download/v3.27.2/cmake-3.27.2.tar.gz --output cmake-3.27.2.tar.gz && tar zxvf cmake-3.27.2.tar.gz && cd cmake-3.27.2 && ./bootstrap && make && make install
-
-RUN apt-get install -yq git && git clone https://github.com/paullouisageneau/libdatachannel.git && \
+RUN git clone https://github.com/paullouisageneau/libdatachannel.git && \
 	cd libdatachannel && git submodule update --init --recursive --depth 1 && \
-	mkdir build && cd build && cmake .. && make && make install
-
-
-RUN apt-get install -yq libopencv-dev
-
-RUN apt-get install -yq git curl zip unzip tar
-
-RUN apt-get -yq install ninja-build
-
-ENV VCPKG_FORCE_SYSTEM_BINARIES 1
-
-RUN git clone https://github.com/Microsoft/vcpkg.git && ./vcpkg/bootstrap-vcpkg.sh
-
-RUN ./vcpkg/vcpkg install protobuf
-
-RUN cd libdatachannel && \
-	mkdir -p build && cd build && cmake .. -DUSE_GNUTLS=0 -DUSE_NICE=0 -DCMAKE_BUILD_TYPE=Release && make && make install
-
+	mkdir -p build && cd build && cmake .. -DUSE_MBEDTLS=0 -DUSE_GNUTLS=0 -DUSE_NICE=0 -DCMAKE_BUILD_TYPE=Release && make && make install

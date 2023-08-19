@@ -19,7 +19,7 @@ find_package(LibDataChannel REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(Protobuf REQUIRED)
-find_package(Protobuf CONFIG REQUIRED)
+#find_package(Protobuf CONFIG REQUIRED)
 
 if (APPLE)
     find_library(GSTREAMER_LIBRARIES
