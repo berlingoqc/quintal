@@ -13,6 +13,20 @@ public:
 	virtual void setPWM(int32_t pin, int32_t value) = 0;
 };
 
+
+class DumpIotControl : public IotControl {
+
+public:
+	DumpIotControl() {}
+
+	void setPinMode(int32_t pin, int32_t mode) {}
+	void setPinHigh(int32_t pin) {}
+	void setPinLow(int32_t pin) {}
+	void setPWM(int32_t pin, int32_t value) {}
+};
+
+
+
 class FirmataIotControl : public IotControl {
 
 public:

@@ -6,8 +6,11 @@ std::map<std::string, std::shared_ptr<IotControl>> CarBuilder::getControl(const 
 
 	for (const auto &pair : config) {
 		auto config = pair.second;
-
-		map[pair.first] = std::make_shared<FirmataIotControl>(config.firmata().device_name());
+		if (pair.first == "dump") {
+			map[pair.first] = std::make_shared<DumpIotControl>();
+		} else {
+			map[pair.first] = std::make_shared<FirmataIotControl>(config.firmata().device_name());
+		}
 	}	
 
 	return map;

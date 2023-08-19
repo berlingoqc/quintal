@@ -24,6 +24,7 @@ message CarConfig {
 enum IoTControlType {
 	INBOARD_GPIO = 0;
 	FIRMATA = 1;
+	DUMP = 2;
 }
 
 message FirmataConfig {
