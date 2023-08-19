@@ -1,6 +1,6 @@
 #! /bin/bash
 
-RELEASE_NAME=${1-:aarch64}
+RELEASE_NAME=${1:-aarch64}
 
 mkdir -p device/$RELEASE_NAME
 
