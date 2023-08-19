@@ -21,3 +21,8 @@ target_link_libraries(quintal_control PRIVATE
     quintal_proto
     webrtc_server
 )
+
+add_custom_target(quintal_control_valgrind
+    COMMAND valgrind --tool=callgrind ${CMAKE_BINARY_DIR}/app/vehicule_remote_control/quintal_control
+    DEPENDS quintal_control
+)

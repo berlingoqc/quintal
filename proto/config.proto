@@ -1,5 +1,32 @@
 syntax = "proto3";
 
+enum SwitchDirection {
+	IN = 0;
+	OUT = 1;
+	PWM = 3;
+}
+
+message SwitchUnitPart {
+	int32 pin = 1;
+	SwitchDirection mode = 2;
+	int32 default_value = 3;
+}
+
+message SwitchGroupPart {
+	string iot_control = 1;
+
+	map<string, SwitchUnitPart> units = 2;
+}
+
+message SwitchGroupControlEvent {
+	map<string, int32> values = 1;
+}
+
+message Part {
+	oneof part {
+		SwitchGroupPart switch_group = 1;
+	}
+}
 
 message DCMotorConfig {
 	int32 int1 = 1;
@@ -15,7 +42,6 @@ message MotorConfig {
 	}
 
 }
-
 message CarConfig {
 	MotorConfig steering = 1;
 	MotorConfig throtle = 2;
@@ -37,8 +63,6 @@ message IoTControlConfig {
 		FirmataConfig firmata = 2;
 	}
 }
-
-
 
 message VideoStreamConfig {
 	int32 ssrc = 1;
@@ -89,5 +113,7 @@ message Config {
 	oneof vehicule {
 		CarConfig car = 10;
 	}
+
+	map<string, Part> parts = 20; 
 
 }

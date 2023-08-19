@@ -12,6 +12,8 @@ enable_testing()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	message("debug mode")
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
 
