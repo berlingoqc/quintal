@@ -89,6 +89,8 @@ message VideoStreamConfig {
 	string udp_host = 13;
 
 	string custom_pipeline = 14;
+
+	bool outside = 15;
 }
 
 

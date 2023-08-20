@@ -160,7 +160,9 @@ int main()
     //    cameraAnalysis.init();
     //});
 
-    auto threadCameraStream = std::thread(cameraStreamThread, cameraStreamer, config.video_stream());
+    if (config.video_stream().outside() == false) {
+        auto threadCameraStream = std::thread(cameraStreamThread, cameraStreamer, config.video_stream());
+    }
 
     //threadCameraStream.detach();
 
