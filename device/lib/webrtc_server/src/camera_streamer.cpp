@@ -52,10 +52,19 @@ void CameraStreamer::init(
 
     std::stringstream ss;
 
-    ss << source_camera << " ! videoconvert ! video/x-raw,width=" << streamConfig.width() << ",height=" << streamConfig.height() << ",format=" << streamConfig.format() << " ! tee name=t ";
-    ss << "t. ! queue ! videoconvert ! x264enc tune= " << streamConfig.h264_enc_tune() << " bitrate=" << streamConfig.bitrate() << " key-int-max=" << streamConfig.keyintmax();
-    ss << " ! video/x-h264, profile=" << streamConfig.h264_profile() << " ! rtph264pay pt=" << streamConfig.h264_codec() << " mtu=" << streamConfig.mtu() << " ! udpsink host=" << streamConfig.udp_host() << " port=" << streamConfig.udp_port()<< " ";
-    ss << " t. ! queue ! appsink name=appsink emit-signals=true ";
+
+    ss << source_camera << " ";
+
+    if (streamConfig.custom_pipeline() == "") {
+        ss  << "! videoconvert ! video/x-raw,width=" << streamConfig.width() << ",height=" << streamConfig.height() << ",format=" << streamConfig.format() << " ! tee name=t ";
+        ss << "t. ! queue ! videoconvert ! x264enc tune= " << streamConfig.h264_enc_tune() << " bitrate=" << streamConfig.bitrate() << " key-int-max=" << streamConfig.keyintmax();
+        ss << " ! video/x-h264, profile=" << streamConfig.h264_profile() << " ! rtph264pay pt=" << streamConfig.h264_codec() << " mtu=" << streamConfig.mtu() << " ! udpsink host=" << streamConfig.udp_host() << " port=" << streamConfig.udp_port()<< " ";
+        ss << " t. ! queue ! appsink name=appsink emit-signals=true ";
+    } else {
+        ss << streamConfig.custom_pipeline();
+    }
+
+    std::cout << ss.str() << std::endl;
 
     pipeline = gst_parse_launch(ss.str().c_str(), &error);
 
@@ -65,8 +74,8 @@ void CameraStreamer::init(
         return;
     }
 
-    sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
-    g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), &callbackData);
+    //sink = gst_bin_get_by_name(GST_BIN(pipeline), "appsink");
+    //g_signal_connect (sink, "new-sample", G_CALLBACK (new_sample), &callbackData);
 
 
     ret = gst_element_set_state (pipeline, GST_STATE_PLAYING);

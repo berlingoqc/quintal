@@ -87,6 +87,8 @@ message VideoStreamConfig {
 
 	int32 udp_port = 12;
 	string udp_host = 13;
+
+	string custom_pipeline = 14;
 }
 
 
